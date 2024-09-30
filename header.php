@@ -78,40 +78,45 @@
 
     <!-- Окно авторизации -->
     <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-auth" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
-            <h1 class="text-2xl font-bold text-white mb-6">Авторизация</h1>
+        <h1 class="text-2xl font-bold text-white mb-6">Авторизация</h1>
 
-            <form id="login-form">
-                <!-- Поле для ввода телефона -->
-                <div class="mb-6">
-                    <input type="tel" name="phone" placeholder="+7 777 777 77 77" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
-                </div>
+        <!-- Блок для отображения ошибки -->
+        <div id="login-error" class="text-red-500 text-sm mb-4 hidden"></div>
 
-                <!-- Поле для ввода пароля -->
-                <div class="mb-6">
-                    <input type="password" name="password" placeholder="Введите пароль" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
-                </div>
+        <form id="login-form">
+            <!-- Поле для ввода телефона -->
+            <div class="mb-6">
+                <input type="tel" name="phone" placeholder="+7 777 777 77 77" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
+            </div>
 
-                <!-- Текст для регистрации -->
-                <p class="text-gray-400 mb-6">
-                    Нет аккаунта? <a href="#" data-remodal-target="modal-register" class="text-white font-semibold underline">Зарегистрироваться</a>
-                </p>
+            <!-- Поле для ввода пароля -->
+            <div class="mb-6">
+                <input type="password" name="password" placeholder="Введите пароль" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
+            </div>
 
-                <!-- Кнопка входа -->
-                <button id="submit-login" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md transition-colors font-bold font-xl w-full flex items-center justify-center">
-                    <span class="btn-text">Войти</span>
-                    <span class="btn-spinner hidden animate-spin fill-white h-5 w-5">
+            <!-- Текст для регистрации -->
+            <p class="text-gray-400 mb-6">
+                Нет аккаунта? <a href="#" data-remodal-target="modal-register" class="text-white font-semibold underline">Зарегистрироваться</a>
+            </p>
+
+            <div class="h-captcha" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
+
+            <!-- Кнопка входа -->
+            <button id="submit-login" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md transition-colors font-bold font-xl w-full flex items-center justify-center">
+                <span class="btn-text">Войти</span>
+                <span class="btn-spinner hidden animate-spin fill-white h-5 w-5">
                     <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z"/>
-                        </svg>
-                    </span>
-                </button>
-            </form>
-        </div>   
+                    </svg>
+                </span>
+            </button>
+        </form>
+    </div>
 
             
-        <!-- Окно регистрации -->
+    <!-- Окно регистрации -->
 
-        <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-register" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-register" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
         <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Регистрация</h1>
 
         <div id="error-message" class="text-sm text-white mb-4 hidden"></div>
@@ -400,6 +405,16 @@ jQuery(document).ready(function($) {
         e.preventDefault(); // Останавливаем стандартную отправку формы
 
         var formData = $(this).serialize(); // Собираем данные формы
+        var hcaptchaResponse = hcaptcha.getResponse(); // Получаем токен hCaptcha
+
+        // Проверяем, прошла ли валидация hCaptcha
+        if (!hcaptchaResponse) {
+            $('#login-error').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
+            return;
+        }
+
+        // Добавляем токен hCaptcha в запрос
+        formData += '&h-captcha-response=' + hcaptchaResponse;
 
         // Показываем спиннер и скрываем текст кнопки
         $('#submit-login .btn-text').prop('disabled', true);
@@ -415,11 +430,16 @@ jQuery(document).ready(function($) {
                     // Авторизация прошла успешно
                     window.location.href = '/dashboard'; // Перенаправление на dashboard
                 } else {
-                    alert('Ошибка авторизации: ' + response.data.message);
+                    // Показываем сообщение об ошибке
+                    $('#login-error').text('Ошибка авторизации: ' + response.data.message).fadeIn();
                 }
             },
             error: function() {
-                alert('Ошибка отправки данных на сервер.');
+                // Показываем общую ошибку
+                $('#login-error').text('Ошибка отправки данных на сервер.').fadeIn();
+            },
+            complete: function() {
+                // Восстанавливаем кнопку и убираем спиннер
                 $('#submit-login .btn-text').prop('disabled', false);
                 $('#submit-login .btn-text').removeClass('hidden');
                 $('#submit-login .btn-spinner').addClass('hidden');
