@@ -177,6 +177,7 @@ function delete_all_tickets() {
 }
 
 add_action('wp_ajax_start_lottery', 'start_lottery');
+add_action('wp_ajax_nopriv_start_lottery', 'start_lottery');
 
 function start_lottery() {
     // Проверка на получение количества участников
