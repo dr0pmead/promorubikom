@@ -267,6 +267,20 @@ class Custom_Walker_Nav_Menu_Mobile extends Walker_Nav_Menu {
     }
 }
 
+function verify_hcaptcha($hcaptcha_response) {
+    $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
+    $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
+        'body' => array(
+            'secret' => $secret_key,
+            'response' => $hcaptcha_response,
+        ),
+    ));
+
+    $response_body = wp_remote_retrieve_body($response);
+    $result = json_decode($response_body);
+
+    return $result && $result->success;
+}
 
 function allow_svg_upload($mimes) {
     $mimes['svg'] = 'image/svg+xml';
