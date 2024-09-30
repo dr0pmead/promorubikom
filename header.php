@@ -456,6 +456,7 @@ jQuery(document).ready(function($) {
     });
 });
 
+
 document.addEventListener('DOMContentLoaded', function () {
     // Ищем оригинальный селект GTranslate
     const originalSelect = document.querySelector('.gt_selector');
