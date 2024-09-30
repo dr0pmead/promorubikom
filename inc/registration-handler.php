@@ -16,6 +16,11 @@ function handle_user_registration() {
             return;
         }
 
+        if (!isset($_POST['h-captcha-response']) || !verify_hcaptcha($_POST['h-captcha-response'])) {
+            wp_send_json_error(array('message' => 'Ошибка валидации hCaptcha.'));
+            return;
+        }
+
         // Генерация случайного пароля
         $password = generate_random_password(6);
 
@@ -56,3 +61,18 @@ function generate_random_password($length = 6) {
 // Подключаем обработчик для AJAX
 add_action('wp_ajax_nopriv_register_user', 'handle_user_registration');
 add_action('wp_ajax_register_user', 'handle_user_registration');
+
+function verify_hcaptcha($hcaptcha_response) {
+    $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
+    $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
+        'body' => array(
+            'secret' => $secret_key,
+            'response' => $hcaptcha_response,
+        ),
+    ));
+
+    $response_body = wp_remote_retrieve_body($response);
+    $result = json_decode($response_body);
+
+    return $result && $result->success;
+}

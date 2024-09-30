@@ -3,7 +3,7 @@ get_header();
 ?>
 
 <main class="min-h-screen relative bg-[#131313] bg-cover bg-no-repeat bg-bottom" 
-    style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.png');">
+    style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.webp');">
 
     <!-- Полупрозрачный слой поверх фонового изображения для затемнения -->
     <div class="absolute inset-0 bg-black opacity-50 z-0"></div>

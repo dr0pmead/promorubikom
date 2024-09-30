@@ -17,7 +17,7 @@ get_header();
 
 <main class="min-h-screen bg-gray-100">
     <section class="relative flex justify-center items-center h-screen bg-[#131313] bg-cover bg-no-repeat bg-bottom"
-        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.png');">
+        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.webp');">
         
         <div class="absolute w-full h-full top-[-4rem] left-0 z-10 pointer-events-none">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/circles.svg" alt="circles">
@@ -40,7 +40,7 @@ get_header();
 
             <!-- <div class="w-full h-full bg-[#131313] rounded-lg border-[1px] border-white/10 px-8 py-3 justify-center items-center flex">
                 <div id="no-data" class="flex flex-col gap-3 w-full items-center justify-center pointer-events-none">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.png" alt="" class="w-[25%]">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="" class="w-[25%]">
                 </div>
             </div> -->
 
@@ -54,7 +54,7 @@ if (empty($tickets) || count($tickets) === 0) {
     // Если чеков нет, выводим сообщение
     ?>
     <div class="nodata text-center text-white font-bold text-xl w-full h-full flex items-center">
-        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.png" alt="Нет данных" class="w-[25%] mx-auto ">
+        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[25%] mx-auto ">
     </div>
     <?php
 } else {
@@ -128,7 +128,7 @@ if (empty($tickets) || count($tickets) === 0) {
         <!-- Drag and Drop для файла -->
         <div id="drop-area" class="w-full h-64 border-dashed border-2 border-white/10 flex items-center justify-center text-center bg-[#131313] rounded-lg cursor-pointer">
             <div class="pointer-events-none">
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/feather_upload-cloud.png" alt="Upload" class="w-16 mx-auto mb-4">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/feather_upload-cloud.webp" alt="Upload" class="w-16 mx-auto mb-4">
                 <p class="text-gray-300">Выберите файл или перетащите его сюда</p>
                 <span class="text-gray-500">JPG, XLSX или PDF, размер файла не более 10 МБ</span>
             </div>

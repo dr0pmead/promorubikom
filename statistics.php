@@ -26,7 +26,7 @@ get_header();
 
 <main class="min-h-screen bg-gray-100">
     <section class="relative flex justify-center items-center h-screen bg-[#131313] bg-cover bg-no-repeat bg-bottom"
-        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.png');">
+        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.webp');">
         
         <div class="absolute w-full h-full top-[-4rem] left-0 z-10 pointer-events-none">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/circles.svg" alt="circles">

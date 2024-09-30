@@ -26,7 +26,7 @@ get_header();
 
 <main class="min-h-screen bg-gray-100">
     <section class="relative flex justify-center items-center h-screen bg-[#131313] bg-cover bg-no-repeat bg-bottom"
-        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.png'); background-size: cover;">
+        style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/main_bg.webp'); background-size: cover;">
         
         <div class="absolute w-full h-full top-[-4rem] left-0 z-10 pointer-events-none">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/circles.svg" alt="circles">
@@ -57,7 +57,7 @@ get_header();
        if (empty($pendingTickets)) {
        ?>
        <div class="nodata flex flex-col justify-center items-center text-center text-white font-bold text-xl w-full h-[400px] lg:h-[700px]">
-           <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.png" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
+           <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
        </div>
        <?php
        } else {
@@ -137,7 +137,7 @@ $lotteryRecords = get_lottery_records();
 <div x-data="{ openDetails: false }" class="w-full mt-4">
     <?php if (empty($lotteryRecords)) { ?>
         <div class="nodata flex flex-col justify-center items-center text-center text-white font-bold text-xl w-full h-[400px] lg:h-[650px]">
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.png" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
         </div>
     <?php } else { ?>
         <div class="relative w-full h-full">
