@@ -87,7 +87,7 @@ add_filter('login_message', 'custom_login_message');
 // Добавляем поле hCaptcha на страницу входа
 function custom_hcaptcha_field() {
     ?>
-    <div class="h-captcha" data-sitekey="ваш-ключ-hcaptcha"></div>
+    <div class="h-captcha" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php
 }
