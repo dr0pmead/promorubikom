@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
         customDropdownDesktop.innerHTML = `
             <div x-data="{ open: false, selectedLang: '${selectedLanguage}' }" class="relative hidden xl:block">
                 <button @click="open = !open" class="text-sm p-2 rounded-lg flex gap-2 items-center group">
-                    <span id="desktop-lang" x-text="selectedLang" class="text-white font-bold text-sm group-hover:opacity-[100%] opacity-[60%] duration-150 uppercase leading-[5px]"></span>
+                    <span id="desktop-lang" x-text="selectedLang" class="text-white font-bold text-sm group-hover:opacity-[100%] opacity-[60%] duration-150 uppercase leading-[5px] text-nowrap"></span>
                     <span>
                       <img src="<?php echo get_template_directory_uri(); ?>/assets/images/material-symbols_language.svg" alt="Language Icon" class="duration-150 w-8 max-w-8 w-auto object-contain group-hover:opacity-[100%] opacity-[60%]">
                     </span>
