@@ -9,7 +9,7 @@
 </head>
 <body <?php body_class(); ?>>
 
-    <div id="preloader flex flex-col gap-12 bg-[#131313] ">
+    <div id="preloader" class="flex flex-col gap-12 bg-[#131313]">
         <div class="logo-container">
             <!-- Логотип -->
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo w-48">
