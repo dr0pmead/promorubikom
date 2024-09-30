@@ -1850,6 +1850,17 @@ body {
   }
 }
 
+input#user_login, input#user_pass {
+  background-color: #131313;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+input#user_login:focus, input#user_pass:focus {
+  border-color: #E53F0B;
+  box-shadow: 0 0 5px rgba(229, 63, 11, 0.5);
+}
+
 .before\:absolute::before {
   content: var(--tw-content);
   position: absolute;

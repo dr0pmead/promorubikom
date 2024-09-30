@@ -10,6 +10,7 @@ require_once get_template_directory() . '/inc/user_data.php';
 require_once get_template_directory() . '/inc/load_tickets.php';
 require_once get_template_directory() . '/inc/validate_token.php';
 require_once get_template_directory() . '/inc/charts.php';
+require_once get_template_directory() . '/inc/login-page.php';
 require_once get_template_directory() . '/inc/export_to_excel.php';
 require_once get_template_directory() . '/posttype/region_post_type.php';
 require_once get_template_directory() . '/posttype/conditions_post_type.php';
