@@ -19,7 +19,7 @@ get_header();
                 </h1>
 
                 <div class="mt-10">
-                    <button id="submit-login" class="bg-[#FF4A1D] hover:bg-[#FF6B3D] text-white font-semibold text-lg px-8 py-2 rounded-lg transition-all duration-300 items-center flex max-w-[225px] justify-center">
+                    <button data-remodal-target="modal-auth" id="submit-login" class="bg-[#FF4A1D] hover:bg-[#FF6B3D] text-white font-semibold text-lg px-8 py-2 rounded-lg transition-all duration-300 items-center flex max-w-[225px] justify-center">
                         Участвовать <span class="ml-2"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/pepicons-print_arrow-left.svg" alt="circles" class="w-6"></span>
                     </button>
                 </div>
