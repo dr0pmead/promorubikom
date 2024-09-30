@@ -38,6 +38,20 @@ function custom_login_styles() {
         .login #nav a, .login #backtoblog a {
             color: #fff !important; /* Ссылки на восстановление пароля и назад на сайт */
         }
+
+        /* Убираем блок выбора языка */
+        #login_language {
+            display: none !important;
+        }
+
+        /* Ссылка "Перейти на сайт" наверх */
+        .custom-site-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff !important;
+            text-decoration: underline;
+        }
     </style>
     <?php
 }
@@ -70,27 +84,33 @@ function custom_login_message() {
 }
 add_filter('login_message', 'custom_login_message');
 
-// Добавляем поле reCAPTCHA на страницу входа
-function custom_recaptcha_field() {
+// Добавляем поле hCaptcha на страницу входа
+function custom_hcaptcha_field() {
     ?>
-    <div class="g-recaptcha" data-sitekey="ваш-ключ-recaptcha"></div>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <div class="h-captcha" data-sitekey="ваш-ключ-hcaptcha"></div>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php
 }
-add_action('login_form', 'custom_recaptcha_field');
+add_action('login_form', 'custom_hcaptcha_field');
 
-// Проверка reCAPTCHA при авторизации
-function verify_recaptcha_on_login($user, $password) {
-    if (isset($_POST['g-recaptcha-response'])) {
-        $response = wp_remote_get("https://www.google.com/recaptcha/api/siteverify?secret=ES_2d3cbf46ed124408a9002a88605ab990&response=" . $_POST['g-recaptcha-response']);
-        $response = json_decode($response['body'], true);
+// Проверка hCaptcha при авторизации
+function verify_hcaptcha_on_login($user, $password) {
+    if (isset($_POST['h-captcha-response'])) {
+        $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
+            'body' => array(
+                'secret' => 'ваш-секретный-ключ-hcaptcha',
+                'response' => $_POST['h-captcha-response'],
+            )
+        ));
+        $response_body = wp_remote_retrieve_body($response);
+        $result = json_decode($response_body);
 
-        if (false == $response['success']) {
-            return new WP_Error('captcha_invalid', 'Ошибка reCAPTCHA: пожалуйста, подтвердите, что вы не робот.');
+        if (!$result->success) {
+            return new WP_Error('captcha_invalid', '<strong>Ошибка:</strong> Пожалуйста, подтвердите, что вы не робот.');
         }
     } else {
-        return new WP_Error('captcha_missing', 'Пожалуйста, пройдите проверку reCAPTCHA.');
+        return new WP_Error('captcha_missing', '<strong>Ошибка:</strong> Пожалуйста, пройдите проверку hCaptcha.');
     }
     return $user;
 }
-add_filter('authenticate', 'verify_recaptcha_on_login', 30, 2);
+add_filter('authenticate', 'verify_hcaptcha_on_login', 30, 2);
