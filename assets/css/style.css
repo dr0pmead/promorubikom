@@ -846,6 +846,10 @@ video {
   width: 8rem;
 }
 
+.w-48 {
+  width: 12rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
@@ -888,10 +892,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-48 {
-  width: 12rem;
 }
 
 .max-w-32 {
@@ -1037,6 +1037,10 @@ video {
   gap: 0.25rem;
 }
 
+.gap-12 {
+  gap: 3rem;
+}
+
 .gap-2 {
   gap: 0.5rem;
 }
@@ -1055,10 +1059,6 @@ video {
 
 .gap-8 {
   gap: 2rem;
-}
-
-.gap-12 {
-  gap: 3rem;
 }
 
 .space-x-4 > :not([hidden]) ~ :not([hidden]) {
@@ -1775,16 +1775,24 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: #131313;
-  /* Фон для прелоадера */
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 9999;
-  /* Поверх всего */
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  /* Переход для плавного исчезновения */
+  opacity: 1;
+  visibility: visible;
+}
+
+#preloader.hidden {
+  opacity: 0;
+  /* Прозрачность 0, чтобы скрыть прелоадер */
+  visibility: hidden;
+  /* Скрываем элемент */
 }
 
 /* Стили логотипа */

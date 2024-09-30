@@ -9,18 +9,18 @@
 </head>
 <body <?php body_class(); ?>>
 
-    <div id="preloader" class="flex flex-col gap-12 bg-[#131313]">
-        <div class="logo-container">
-            <!-- Логотип -->
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo w-48">
-        </div>
-        <!-- Анимация с точками -->
-        <div class="dots-container">
-            <span class="dot dot1"></span>
-            <span class="dot dot2"></span>
-            <span class="dot dot3"></span>
-        </div>
+<div id="preloader" class="flex flex-col gap-12 bg-[#131313]">
+    <div class="logo-container">
+        <!-- Логотип -->
+        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo w-48">
     </div>
+    <!-- Анимация с точками -->
+    <div class="dots-container">
+        <span class="dot dot1"></span>
+        <span class="dot dot2"></span>
+        <span class="dot dot3"></span>
+    </div>
+</div>
 
 <header id="header" class="w-full h-[100px] md:h-[130px] flex items-center justify-between fixed top-0 left-0 duration-150 z-50 px-8 md:px-14 lg:px-16 xl:px-8 2xl:px-24 3xl:px-28">
 
@@ -469,10 +469,7 @@ jQuery(document).ready(function($) {
 
 window.addEventListener('load', function() {
     var preloader = document.getElementById('preloader');
-    preloader.style.opacity = '0';  // Плавное исчезновение
-    setTimeout(function() {
-        preloader.style.display = 'none';
-    }, 500);  // Убираем прелоадер через 0.5 сек после скрытия
+    preloader.classList.add('hidden'); // Добавляем класс для плавного затухания
 });
 
 document.addEventListener('DOMContentLoaded', function () {
