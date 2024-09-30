@@ -308,3 +308,33 @@ function fix_svg_mime_type($data, $file, $filename, $mimes) {
     return $data;
 }
 add_filter('wp_check_filetype_and_ext', 'fix_svg_mime_type', 10, 4);
+
+function custom_hcaptcha_field() {
+    ?>
+    <div class="h-captcha" data-sitekey="ваш-ключ-hcaptcha"></div>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <?php
+}
+add_action('login_form', 'custom_hcaptcha_field');
+
+// Проверка hCaptcha при авторизации
+function verify_hcaptcha_on_login($user, $password) {
+    if (isset($_POST['h-captcha-response'])) {
+        $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
+            'body' => array(
+                'secret' => '7fae0340-2930-422c-aefe-e4ce125e2c0a',
+                'response' => $_POST['h-captcha-response'],
+            )
+        ));
+        $response_body = wp_remote_retrieve_body($response);
+        $result = json_decode($response_body);
+
+        if (!$result->success) {
+            return new WP_Error('captcha_invalid', '<strong>Ошибка:</strong> Пожалуйста, подтвердите, что вы не робот.');
+        }
+    } else {
+        return new WP_Error('captcha_missing', '<strong>Ошибка:</strong> Пожалуйста, пройдите проверку hCaptcha.');
+    }
+    return $user;
+}
+add_filter('authenticate', 'verify_hcaptcha_on_login', 30, 2);
