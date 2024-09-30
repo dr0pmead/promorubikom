@@ -12,7 +12,7 @@
     <div id="preloader">
         <div class="logo-container">
             <!-- Логотип -->
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.png" alt="Логотип" class="logo">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo">
         </div>
         <!-- Анимация с точками -->
         <div class="dots-container">
