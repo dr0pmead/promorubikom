@@ -9,6 +9,19 @@
 </head>
 <body <?php body_class(); ?>>
 
+    <div id="preloader">
+        <div class="logo-container">
+            <!-- Логотип -->
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.png" alt="Логотип" class="logo">
+        </div>
+        <!-- Анимация с точками -->
+        <div class="dots-container">
+            <span class="dot dot1"></span>
+            <span class="dot dot2"></span>
+            <span class="dot dot3"></span>
+        </div>
+    </div>
+
 <header id="header" class="w-full h-[100px] md:h-[130px] flex items-center justify-between fixed top-0 left-0 duration-150 z-50 px-8 md:px-14 lg:px-16 xl:px-8 2xl:px-24 3xl:px-28">
 
     <!-- Логотип -->
@@ -115,9 +128,7 @@
         </form>
     </div>
 
-            
     <!-- Окно регистрации -->
-
     <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-register" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
         <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Регистрация</h1>
 

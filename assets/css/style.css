@@ -1761,6 +1761,79 @@ body {
   color: rgb(209 213 219);
 }
 
+/* Стили для всего прелоадера */
+
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #131313;
+  /* Фон для прелоадера */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  /* Поверх всего */
+}
+
+/* Стили логотипа */
+
+.logo-container .logo {
+  width: 150px;
+  /* Размер логотипа */
+  height: auto;
+}
+
+/* Контейнер для точек */
+
+.dots-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Стили для точек */
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background-color: #FF4A1D;
+  /* Цвет точек */
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+/* Анимация для точек */
+
+.dot1 {
+  animation-delay: -0.2s;
+}
+
+.dot2 {
+  animation-delay: -0.1s;
+}
+
+.dot3 {
+  animation-delay: 0s;
+}
+
+/* Ключевые кадры для анимации прыжка */
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+    /* Высота прыжка */
+  }
+}
+
 .before\:absolute::before {
   content: var(--tw-content);
   position: absolute;
@@ -1844,6 +1917,10 @@ body {
 
 .disabled\:pointer-events-none:disabled {
   pointer-events: none;
+}
+
+.disabled\:bg-\[\#E53F0B\]\/50:disabled {
+  background-color: rgb(229 63 11 / 0.5);
 }
 
 .disabled\:bg-opacity-50:disabled {
