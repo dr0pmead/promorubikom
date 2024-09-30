@@ -99,7 +99,7 @@
                 Нет аккаунта? <a href="#" data-remodal-target="modal-register" class="text-white font-semibold underline">Зарегистрироваться</a>
             </p>
 
-            <div class="h-captcha" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
+            <div class="h-captcha flex w-full justify-between items-center" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
 
             <!-- Кнопка входа -->
             <button id="submit-login" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md transition-colors font-bold font-xl w-full flex items-center justify-center">
@@ -172,6 +172,7 @@
             <div class="w-full flex items-center justify-center">
                 <div class="h-captcha " data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
             </div>
+
             <!-- Кнопка регистрации -->
             <button type="submit" id="submit-registration" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
                 <span class="btn-text">Зарегистрироваться</span>
