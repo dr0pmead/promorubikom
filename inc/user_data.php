@@ -187,8 +187,19 @@ function start_lottery() {
 
     $participantCount = intval($_POST['participant_count']);
 
+    // Проверка корректности количества участников
+    if (!is_numeric($participantCount) || $participantCount < 1 || $participantCount > 1000) {
+        wp_send_json_error(['message' => 'Некорректное количество участников']);
+        return;
+    }
+
     // Получаем MongoDB
     $db = get_mongo_connection();
+    if (!$db) {
+        wp_send_json_error(['message' => 'Ошибка подключения к базе данных']);
+        return;
+    }
+
     $ticketsCollection = $db->tickets;
     $lotteryCollection = $db->lottery;
 
@@ -211,11 +222,9 @@ function start_lottery() {
 
     // Если есть предыдущая лотерея, увеличиваем её номер, иначе начинаем с #000001
     if ($lastLottery && isset($lastLottery['numberLottery'])) {
-        // Удаляем "#" и увеличиваем номер
         $lastNumber = (int) str_replace('#', '', $lastLottery['numberLottery']);
         $newNumber = $lastNumber + 1;
     } else {
-        // Если лотерей не было, начинаем с 1
         $newNumber = 1;
     }
 
@@ -252,7 +261,6 @@ function start_lottery() {
     // Преобразуем в MongoDB\BSON\UTCDateTime
     $dateWithOffset = new MongoDB\BSON\UTCDateTime($currentTimestamp * 1000);
 
-
     // Создаем запись в коллекции "lottery"
     try {
         $lotteryCollection->insertOne([
@@ -265,8 +273,10 @@ function start_lottery() {
         wp_send_json_success(['message' => 'Розыгрыш завершен']);
     } catch (Exception $e) {
         wp_send_json_error(['message' => 'Ошибка при сохранении данных розыгрыша: ' . $e->getMessage()]);
+        error_log('Ошибка при сохранении данных розыгрыша: ' . $e->getMessage());
     }
 }
+
 
 function get_lottery_records() {
     // Подключаем MongoDB и коллекцию "lottery"
