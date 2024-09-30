@@ -277,7 +277,7 @@ jQuery(document).ready(function($) {
             if (participantCount >= 1 && participantCount <= 1000) {
                 // AJAX-запрос на сервер для выполнения логики розыгрыша
                 $.ajax({
-                    url: ajax_object.ajax_url,
+                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
                     type: 'POST',
                     data: {
                         action: 'start_lottery',
