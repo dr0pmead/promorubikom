@@ -311,7 +311,7 @@ add_filter('wp_check_filetype_and_ext', 'fix_svg_mime_type', 10, 4);
 
 function custom_hcaptcha_field() {
     ?>
-    <div class="h-captcha" data-sitekey="ваш-ключ-hcaptcha"></div>
+    <div class="h-captcha" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php
 }
@@ -322,7 +322,7 @@ function verify_hcaptcha_on_login($user, $password) {
     if (isset($_POST['h-captcha-response'])) {
         $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
             'body' => array(
-                'secret' => '7fae0340-2930-422c-aefe-e4ce125e2c0a',
+                'secret' => 'ES_2d3cbf46ed124408a9002a88605ab990',
                 'response' => $_POST['h-captcha-response'],
             )
         ));
