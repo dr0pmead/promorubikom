@@ -129,17 +129,3 @@ add_action('wp_ajax_nopriv_logout_user', 'handle_logout_request');
 add_action('wp_ajax_login_user', 'handle_login_request');
 add_action('wp_ajax_nopriv_login_user', 'handle_login_request');
 
-function verify_hcaptcha($hcaptcha_response) {
-    $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
-    $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
-        'body' => array(
-            'secret' => $secret_key,
-            'response' => $hcaptcha_response,
-        ),
-    ));
-
-    $response_body = wp_remote_retrieve_body($response);
-    $result = json_decode($response_body);
-
-    return $result && $result->success;
-}
