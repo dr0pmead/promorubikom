@@ -16,25 +16,11 @@ function handle_user_registration() {
             return;
         }
 
-        // Проверка наличия hCaptcha
-        if (isset($_POST['h-captcha-response'])) {
-            $hcaptcha_response = $_POST['h-captcha-response'];
-    
-            // Проверяем hCaptcha
-            if (!verify_hcaptcha($hcaptcha_response)) {
-                wp_send_json_error(array('message' => 'Проверка hCaptcha не пройдена.'));
-                return;
-            }
-        } else {
-            wp_send_json_error(array('message' => 'Пожалуйста, пройдите проверку hCaptcha.'));
-            return;
-        }
-        
         // Генерация случайного пароля
         $password = generate_random_password(6);
 
         // Сохранение данных в MongoDB с полем admin по умолчанию false
-        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false);
+        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false); // Передаем false для admin
 
         if ($saved) {
             // Отправляем успешный ответ с паролем
@@ -70,4 +56,3 @@ function generate_random_password($length = 6) {
 // Подключаем обработчик для AJAX
 add_action('wp_ajax_nopriv_register_user', 'handle_user_registration');
 add_action('wp_ajax_register_user', 'handle_user_registration');
-

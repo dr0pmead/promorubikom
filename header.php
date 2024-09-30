@@ -182,10 +182,6 @@
                 </label>
             </div>
 
-            <div class="w-full flex items-center justify-center">
-                <div class="h-captcha " data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
-            </div>
-
             <!-- Кнопка регистрации -->
             <button type="submit" id="submit-registration" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
                 <span class="btn-text">Зарегистрироваться</span>
@@ -245,16 +241,6 @@ jQuery(document).ready(function($) {
         e.preventDefault(); // Предотвращаем стандартную отправку формы
 
         var formData = $(this).serialize(); // Собираем данные формы
-        var hcaptchaResponse = hcaptcha.getResponse(); // Получаем токен hCaptcha
-
-        // Проверяем, прошла ли валидация hCaptcha
-        if (!hcaptchaResponse) {
-            $('#error-message').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
-            return;
-        }
-
-        // Добавляем токен hCaptcha в запрос
-        formData += '&h-captcha-response=' + hcaptchaResponse;
 
         // Показываем спиннер и скрываем текст кнопки
         $('#submit-registration .btn-text').prop('disabled', true);
