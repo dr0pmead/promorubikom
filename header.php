@@ -9,10 +9,10 @@
 </head>
 <body <?php body_class(); ?>>
 
-    <div id="preloader">
+    <div id="preloader flex flex-col gap-12 bg-[#131313] ">
         <div class="logo-container">
             <!-- Логотип -->
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Логотип" class="logo w-48">
         </div>
         <!-- Анимация с точками -->
         <div class="dots-container">
@@ -467,6 +467,13 @@ jQuery(document).ready(function($) {
     });
 });
 
+window.addEventListener('load', function() {
+    var preloader = document.getElementById('preloader');
+    preloader.style.opacity = '0';  // Плавное исчезновение
+    setTimeout(function() {
+        preloader.style.display = 'none';
+    }, 500);  // Убираем прелоадер через 0.5 сек после скрытия
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     // Ищем оригинальный селект GTranslate
@@ -597,6 +604,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+let menuOpen = false; // Переменная, которая отслеживает состояние меню
+
+
+document.getElementById('mobile-menu-button').addEventListener('click', function () {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const body = document.getElementsByTagName('body')[0];
+
+    if (!menuOpen) {
+        // Открыть меню
+        mobileMenu.classList.remove('opacity-0', 'translate-x-[200px]');
+        mobileMenu.classList.toggle('pointer-events-none');
+        mobileMenu.classList.add('opacity-1');
+        body.classList.add('overflow-hidden');
+        menuOpen = true; // Меню открыто
+    } else {
+        // Закрыть меню
+        mobileMenu.classList.remove('opacity-1');
+        mobileMenu.classList.toggle('pointer-events-none');
+        mobileMenu.classList.add('opacity-0', 'translate-x-[200px]');
+        body.classList.remove('overflow-hidden');
+        menuOpen = false; // Меню закрыто
+    }
+});
+
+// Закрытие меню при клике вне его
+document.addEventListener('click', function (event) {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+    if (menuOpen && !mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+        const body = document.getElementsByTagName('body')[0];
+        mobileMenu.classList.remove('opacity-1');
+        mobileMenu.classList.add('opacity-0', 'translate-x-[500px]');
+        mobileMenu.classList.toggle('pointer-events-none');
+        body.classList.remove('overflow-hidden');
+        menuOpen = false;
+    }
+});
+
 
 </script>
 </body>
