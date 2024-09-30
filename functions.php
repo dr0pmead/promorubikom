@@ -21,6 +21,7 @@ function mytheme_enqueue_styles() {
     wp_enqueue_style( 'remodal-default-theme', get_template_directory_uri() . '/assets/css/remodal-default-theme.css' );
     wp_enqueue_script( 'remodal-js', get_template_directory_uri() . '/assets/js/remodal.min.js', array('jquery'), null, true );
     wp_enqueue_script('jscookie', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js', array('jquery'), null, true);
+    wp_enqueue_script('hcaptcha', 'https://js.hcaptcha.com/1/api.js', array('jquery'), null, true);
     wp_enqueue_script( 'mainmenu-js', get_template_directory_uri() . '/assets/js/mainmenu.js', array('jquery'), null, true );
     wp_enqueue_style('checkbox-style', get_template_directory_uri() . '/assets/css/checkbox.css');
     wp_enqueue_style('tailwind-style', get_template_directory_uri() . '/assets/css/style.css');
