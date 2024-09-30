@@ -1,0 +1,17 @@
+{
+    "name": "nikitka/promorubikom",
+    "description": "test",
+    "type": "project",
+    "license": "mit",
+    "authors": [
+        {
+            "name": "т"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "mongodb/mongodb": "^1.12",
+        "firebase/php-jwt": "^6.10",
+        "phpoffice/phpspreadsheet": "^3.3"
+    }
+}

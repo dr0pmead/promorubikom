@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_light.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_regular.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_bold.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_boldit.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_boldit.woff') format('woff');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_extrabold.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_extrabold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_extraboldit.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_extraboldit.woff') format('woff');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_black.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url('/wp-content/themes/promorubikom/assets/fonts/proximanova_blackit.woff2') format('woff2'),
+         url('/wp-content/themes/promorubikom/assets/fonts/proximanova_blackit.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+}
+
+body {
+    font-family: 'Proxima Nova', sans-serif;
+    background: #060606 ;
+}
+
+/* Начальное состояние модального окна (закрыто) */
+.modal {
+    transition: opacity 0.3s ease, pointer-events 0.3s ease;
+}
+
+.modal.modal-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Анимация размывания фона с плавным появлением */
+.modal .modal-overlay {
+    backdrop-filter: blur(0px); /* Изначально без размытия */
+    opacity: 0;
+    transition: backdrop-filter 0.3s ease, opacity 0.3s ease; /* Одновременный переход размытия и прозрачности */
+}
+
+.modal.modal-open .modal-overlay {
+    backdrop-filter: blur(20px); /* Размытие фона при открытии */
+    opacity: 1; /* Плавное появление */
+}
+
+/* Анимация зума модального окна */
+.modal .modal-content {
+    transform: scale(0.75); /* Уменьшенное состояние окна при закрытии */
+    transition: transform 0.3s ease; /* Переход для масштаба */
+}
+
+.modal.modal-open .modal-content {
+    transform: scale(1); /* Полный размер при открытии */
+}
+
+.remodal-overlay {
+    background: #131313e0 !important;
+    backdrop-filter: blur(0.5rem);
+}
+
+.auth-modal {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.gtranslate_wrapper select {
+    appearance: none; /* Убираем стандартный стиль браузера */
+    background: #131313; /* Темный фон как у вашего дизайна */
+    color: white; /* Белый текст */
+    font-size: 14px; /* Размер текста */
+    padding: 10px; /* Поля */
+    border-radius: 5px; /* Скругленные углы */
+    width: 150px; /* Ширина селекта */
+    position: relative; /* Для дальнейшего позиционирования */
+}
+
+.gtranslate_wrapper select option {
+    background: #262626; /* Фон для выпадающих опций */
+    color: white; /* Белый текст */
+}
+
+.gtranslate_wrapper .gt_selector {
+    background-color: transparent;
+    text-transform: uppercase;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Основные стили для drag-area */
+#drop-area {
+    border-color: #999;
+    transition: border-color 0.3s ease;
+}
+
+/* Анимация при наведении */
+#drop-area.dragging,
+#drop-area:hover {
+    border-color: #E53F0B;
+}
+
+/* Анимация штрих-кода */
+.barcode-icon {
+    fill: #999;
+    transition: fill 0.3s ease;
+}
+
+#drop-area.dragging .barcode-icon,
+#drop-area:hover .barcode-icon {
+    fill: #E53F0B;
+}
+
+.condition-item > p{
+    color: rgb(209 213 219);
+}
