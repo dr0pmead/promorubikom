@@ -76,8 +76,8 @@
             </div>
     </div>
 
-     <!-- Окно авторизации -->
-     <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-auth" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <!-- Окно авторизации -->
+    <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-auth" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
             <h1 class="text-2xl font-bold text-white mb-6">Авторизация</h1>
 
             <form id="login-form">
@@ -290,43 +290,44 @@ jQuery(document).ready(function($) {
 });
 
 jQuery(document).ready(function($) {
-    // Проверяем куки при загрузке страницы
-    if (getCookie('user_id')) {
-        $.ajax({
-            url: ajax_object.ajax_url,
-            method: 'POST',
-            data: { action: 'get_user_button_html' }, // Действие в WordPress
-            success: function(response) {
-                // Заменяем содержимое контейнера на ответ с HTML кнопки
-                $('#login-container').html(response);
+        // Проверяем куки при загрузке страницы
+        if (getCookie('user_id')) {
+            $.ajax({
+                url: ajax_object.ajax_url,
+                method: 'POST',
+                data: { action: 'get_user_button_html' }, // Действие в WordPress
+                success: function(response) {
+                    // Заменяем содержимое контейнера на ответ с HTML кнопки
+                    $('#login-container').html(response);
+                }
+            });
+        }
+
+        // Функция для получения куки
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+        
+        jQuery(document).on('click', '#logout-btn', function () {
+            $.ajax({
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            type: 'POST',
+            data: { action: 'logout_user' }, // Указываем действие logout
+            success: function (response) {
+                if (response.success) {
+                    // Перезагрузка страницы после успешного logout
+                    window.location.reload();
+                } else {
+                    alert('Ошибка при выходе: ' + response.data.message);
+                }
+            },
+            error: function () {
+                alert('Ошибка сервера при попытке выхода');
             }
         });
-    }
-
-    // Функция для получения куки
-    function getCookie(name) {
-        let matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
-    
-    jQuery(document).on('click', '#logout-btn', function () {
-        $.ajax({
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-        type: 'POST',
-        data: { action: 'logout_user' }, // Указываем действие logout
-        success: function (response) {
-            if (response.success) {
-                // Перезагрузка страницы после успешного logout
-                window.location.reload();
-            } else {
-                alert('Ошибка при выходе: ' + response.data.message);
-            }
-        },
-        error: function () {
-            alert('Ошибка сервера при попытке выхода');
-        }
     });
 });
 
@@ -394,6 +395,37 @@ jQuery(document).ready(function($) {
     });
 });
 
+jQuery(document).ready(function($) {
+    $('#login-form').on('submit', function(e) {
+        e.preventDefault(); // Останавливаем стандартную отправку формы
+
+        var formData = $(this).serialize(); // Собираем данные формы
+
+        // Показываем спиннер и скрываем текст кнопки
+        $('#submit-login .btn-text').prop('disabled', true);
+        $('#submit-login .btn-text').addClass('hidden');
+        $('#submit-login .btn-spinner').removeClass('hidden');
+
+        $.ajax({
+            url: ajax_object.ajax_url, // Используем переменную ajax_object, переданную через wp_localize_script
+            type: 'POST',
+            data: formData + '&action=login_user', // Добавляем action
+            success: function(response) {
+                if (response.success) {
+                    // Авторизация прошла успешно
+                    window.location.href = '/dashboard'; // Перенаправление на dashboard
+                } else {
+                    alert('Ошибка авторизации: ' + response.data.message);
+                }
+            },
+            error: function() {
+                alert('Ошибка отправки данных на сервер.');
+                $('#submit-login .btn-text').prop('disabled', false);
+                $('#submit-login .btn-text').removeClass('hidden');
+                $('#submit-login .btn-spinner').addClass('hidden');
+            }
+        });
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
