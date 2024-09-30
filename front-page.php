@@ -15,7 +15,7 @@ get_header();
         <section class="relative flex justify-center items-center py-24 pt-48">
             <div class="w-full flex items-center justify-center flex-col text-center">
                 <h1 class="text-white font-bold text-3xl md:text-4xl lg:text-6xl leading-tight tracking-wide">
-                    Участвуйте в <span class="before:block before:absolute before:-inset-1 before:skew-y-2 before:bg-[#FF4A1D] relative inline-block"><span class="relative text-white">розыгрышахччч</span></span> <br> от компании Рубиком
+                    Участвуйте в <span class="before:block before:absolute before:-inset-1 before:skew-y-2 before:bg-[#FF4A1D] relative inline-block"><span class="relative text-white">розыгрышах</span></span> <br> от компании Рубиком
                 </h1>
 
                 <div class="mt-10">
