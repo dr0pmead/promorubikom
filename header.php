@@ -245,7 +245,15 @@ jQuery(document).ready(function($) {
         e.preventDefault(); // Предотвращаем стандартную отправку формы
 
         var formData = $(this).serialize(); // Собираем данные формы
+        var hcaptchaResponse = hcaptcha.getResponse(); // Получаем токен hCaptcha
 
+        // Проверяем, прошла ли валидация hCaptcha
+        if (!hcaptchaResponse) {
+            $('#error-message').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
+            return;
+        }
+
+        // Добавляем токен hCaptcha в запрос
         formData += '&h-captcha-response=' + hcaptchaResponse;
 
         // Показываем спиннер и скрываем текст кнопки

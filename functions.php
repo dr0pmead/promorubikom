@@ -338,3 +338,4 @@ function verify_hcaptcha_on_login($user, $password) {
     return $user;
 }
 add_filter('authenticate', 'verify_hcaptcha_on_login', 30, 2);
+

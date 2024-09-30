@@ -16,11 +16,19 @@ function handle_user_registration() {
             return;
         }
 
-        if (!isset($_POST['h-captcha-response']) || !verify_hcaptcha($_POST['h-captcha-response'])) {
-            wp_send_json_error(array('message' => 'Ошибка валидации hCaptcha.'));
+        if (isset($_POST['h-captcha-response'])) {
+            $hcaptcha_response = $_POST['h-captcha-response'];
+    
+            // Проверяем hCaptcha
+            if (!verify_hcaptcha($hcaptcha_response)) {
+                wp_send_json_error(array('message' => 'Проверка hCaptcha не пройдена.'));
+                return;
+            }
+        } else {
+            wp_send_json_error(array('message' => 'Пожалуйста, пройдите проверку hCaptcha.'));
             return;
         }
-
+        
         // Генерация случайного пароля
         $password = generate_random_password(6);
 
