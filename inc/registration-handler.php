@@ -16,6 +16,7 @@ function handle_user_registration() {
             return;
         }
 
+        // Проверка наличия hCaptcha
         if (isset($_POST['h-captcha-response'])) {
             $hcaptcha_response = $_POST['h-captcha-response'];
     
@@ -33,7 +34,7 @@ function handle_user_registration() {
         $password = generate_random_password(6);
 
         // Сохранение данных в MongoDB с полем admin по умолчанию false
-        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false); // Передаем false для admin
+        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false);
 
         if ($saved) {
             // Отправляем успешный ответ с паролем
