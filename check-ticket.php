@@ -214,7 +214,7 @@ $lotteryRecords = get_lottery_records();
         <input type="number" id="participant-count" class="w-full px-4 py-2 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Количество участников (0-1000)" min="0" max="1000">
 
         <!-- Кнопка "Разыграть" -->
-        <button id="start-lottery" class="bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
+        <button id="start-lottery" class="bg-[#E53F0B] hover:bg-[#F35726] mt-6 text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
             <span class="btn-text">Разыграть</span>
             <span class="btn-spinner hidden animate-spin fill-white h-5 w-5">
             <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
