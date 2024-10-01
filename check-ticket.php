@@ -211,8 +211,13 @@ $lotteryRecords = get_lottery_records();
             <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Введите количество участников</h1>
             <div id="error-lottery" class="text-red-500 text-sm mb-4 hidden"></div>
 
-            <!-- Поле ввода количества участников -->
-            <input type="number" id="participant-count" class="w-full px-4 py-2 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Количество участников (0-1000)" min="0" max="1000">
+            <!-- Поле ввода количества участников
+            <select type="select" id="lottery-action" class="w-full px-4 py-2 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Название акции">
+                    
+            </select>    -->
+
+            <input type="text" id="lottery-name" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Название розыгрыша">
+            <input type="number" id="participant-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" placeholder="Количество участников (0-1000)" min="0" max="1000">
 
             <!-- Кнопка "Разыграть" -->
             <button id="start-lottery" class="bg-[#E53F0B] hover:bg-[#F35726] mt-6 text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
@@ -278,13 +283,15 @@ jQuery(document).ready(function($) {
 
         // Логика розыгрыша при нажатии на кнопку "Разыграть"
         $('#start-lottery').on('click', function() {
-            var participantCount = $('#participant-count').val(); // Получаем количество участников
+            var participantCount = $('#participant-count').val();
+            var lotteryName = $('#lottery-name').val();
             if (participantCount < 1 || participantCount > 1000) {
                 $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
                 return;
             }
 
             // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
+            $('#lottery-name').hide();
             $('#participant-count').hide();
             $('#start-lottery').hide();
             $('#modal-title').hide(); // Скрываем заголовок
@@ -300,7 +307,8 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'start_lottery',
-                    participant_count: participantCount
+                    participant_count: participantCount,
+                    lottery_name: lotteryName
                 },
                 success: function(response) {
                     if (response.success) {

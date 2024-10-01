@@ -219,6 +219,7 @@ function start_lottery() {
     }
 
     $participantCount = intval($_POST['participant_count']);
+    $lotteryName = sanitize_text_field($_POST['lottery_name']);
 
     // Проверка корректности количества участников
     if (!is_numeric($participantCount) || $participantCount < 1 || $participantCount > 1000) {
@@ -250,19 +251,8 @@ function start_lottery() {
         return;
     }
 
-    // Получаем последний номер лотереи, если такой существует
-    $lastLottery = $lotteryCollection->findOne([], ['sort' => ['_id' => -1], 'projection' => ['numberLottery' => 1]]);
-
-    // Если есть предыдущая лотерея, увеличиваем её номер, иначе начинаем с #000001
-    if ($lastLottery && isset($lastLottery['numberLottery'])) {
-        $lastNumber = (int) str_replace('#', '', $lastLottery['numberLottery']);
-        $newNumber = $lastNumber + 1;
-    } else {
-        $newNumber = 1;
-    }
-
     // Преобразуем номер в формат #000001
-    $numberLottery = '#' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+    $numberLottery = $lotteryName;
 
     // Перемешиваем массив и выбираем первые N тикетов
     shuffle($approvedTickets);

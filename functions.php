@@ -13,6 +13,7 @@ require_once get_template_directory() . '/inc/charts.php';
 require_once get_template_directory() . '/inc/export_to_excel.php';
 require_once get_template_directory() . '/posttype/region_post_type.php';
 require_once get_template_directory() . '/posttype/conditions_post_type.php';
+require_once get_template_directory() . '/posttype/promo_post_type.php';
 
 
 function mytheme_enqueue_styles() {
