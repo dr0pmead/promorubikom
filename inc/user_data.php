@@ -239,21 +239,17 @@ function start_lottery() {
     $formattedWinningTickets = [];
 
     foreach ($winningTickets as $ticket) {
-        // Получаем данные о владельце тикета
-        $owner = $db->users->findOne(['_id' => new MongoDB\BSON\ObjectId($ticket['owner_id'])]);
-
-        if ($owner) {
-            $formattedWinningTickets[] = [
-                'ticket_id' => $ticket['_id'],
-                'file_name' => $ticket['file_name'],
-                'path' => $ticket['path'],
-                'owner' => [
-                    'fio' => $owner['fio'],
-                    'phone' => $owner['phone'],
-                    'region' => $owner['region']
-                ]
-            ];
-        }
+        // Получаем данные непосредственно из тикета
+        $formattedWinningTickets[] = [
+            'ticket_id' => (string) $ticket['_id'],
+            'file_name' => $ticket['file_name'],
+            'path' => $ticket['path_to'],
+            'owner' => [
+                'fio' => $ticket['fio'],
+                'phone' => $ticket['phone'],
+                'region' => $ticket['region']
+            ]
+        ];
     }
 
     // Текущее время + 5 часов
@@ -277,6 +273,7 @@ function start_lottery() {
         error_log('Ошибка при сохранении данных розыгрыша: ' . $e->getMessage());
     }
 }
+
 
 
 function get_lottery_records() {
@@ -314,23 +311,31 @@ function get_lottery_details() {
         $lottery = $lotteryCollection->findOne(['_id' => new MongoDB\BSON\ObjectId($lotteryId)]);
 
         if ($lottery) {
-            // Проверяем и форматируем массив winning_tickets
-            $lottery['winning_tickets'] = $lottery['winning_tickets'] ?? [];
+            $formattedWinningTickets = [];
 
-            foreach ($lottery['winning_tickets'] as &$ticket) {
-                // Форматируем MongoDB ObjectId в строку
-                $ticket['ticket_id'] = (string) $ticket['ticket_id'];
-
-                // Если в MongoDB есть другие объекты, требующие форматирования, можно добавить здесь
-                if (isset($ticket['owner']['fio'])) {
-                    $ticket['owner']['fio'] = htmlspecialchars($ticket['owner']['fio']);
-                }
-                // Пример форматирования телефона (если требуется)
-                $ticket['owner']['phone'] = htmlspecialchars($ticket['owner']['phone']);
-                $ticket['owner']['region'] = htmlspecialchars($ticket['owner']['region']);
+            // Форматируем выигрышные тикеты
+            foreach ($lottery['winning_tickets'] as $ticket) {
+                $formattedWinningTickets[] = [
+                    'ticket_id' => $ticket['ticket_id'], // ticket_id теперь строка
+                    'file_name' => $ticket['ticket_number'], // Используем ticket_number вместо file_name
+                    'path' => htmlspecialchars($ticket['path']),
+                    'owner' => [
+                        'fio' => htmlspecialchars($ticket['owner']['fio']),
+                        'phone' => htmlspecialchars($ticket['owner']['phone']),
+                        'region' => htmlspecialchars($ticket['owner']['region'])
+                    ]
+                ];
             }
 
-            wp_send_json_success(['data' => $lottery]);
+            // Возвращаем данные
+            wp_send_json_success([
+                'data' => [
+                    'lottery_id' => $lotteryId,
+                    'numberLottery' => $lottery['numberLottery'] ?? 'Неизвестный номер',
+                    'participant_count' => $lottery['participant_count'] ?? 'Неизвестно',
+                    'winning_tickets' => $formattedWinningTickets
+                ]
+            ]);
         } else {
             wp_send_json_error(['message' => 'Лотерея не найдена']);
         }
@@ -338,3 +343,4 @@ function get_lottery_details() {
         wp_send_json_error(['message' => 'Ошибка при получении данных: ' . $e->getMessage()]);
     }
 }
+

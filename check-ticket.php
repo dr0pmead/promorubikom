@@ -63,11 +63,11 @@ get_header();
        } else {
            echo '<div class="tickets-grid mt-4 flex flex-col gap-4 w-full">';
            foreach ($pendingTickets as $ticket) {
-               $filename = htmlspecialchars($ticket['file_name']);
+               $filename = htmlspecialchars($ticket['ticket_number']);
                $uploadDate = isset($ticket['upload_date']) && $ticket['upload_date'] instanceof MongoDB\BSON\UTCDateTime 
                    ? date('d.m.Y H:i', $ticket['upload_date']->toDateTime()->getTimestamp()) 
                    : 'Дата не указана';
-               $path = htmlspecialchars($ticket['path']); 
+               $path = htmlspecialchars($ticket['path_to']); 
                ?>
                <div class="ticket-item bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full cursor-pointer"
                    data-image-path="<?php echo $path; ?>" onclick="openImageModal('<?php echo $path; ?>')">
@@ -223,13 +223,6 @@ $lotteryRecords = get_lottery_records();
             </span>
         </button>
     </div>
-
-    <div id="modal-lottery-details" class="auth-modal max-h-[450px] bg-[#131313] border-[1px] overflow-hidden border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery-details" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
-    <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Детали розыгрыша</h1>
-    <div class="modal-body  overflow-y-auto max-h-[250px]">
-        
-    </div>
-    <button class="bg-[#E53F0B] hover:bg-[#F35726] text-white px-4 py-2 mt-4 rounded-md" data-remodal-action="close">Закрыть</button>
 </div>
 
     <script>
@@ -424,66 +417,67 @@ jQuery(document).ready(function($) {
         }
 
         function fetchLotteryDetails(lotteryId) {
-    $.ajax({
-        url: '<?php echo admin_url("admin-ajax.php"); ?>',
-        type: 'POST',
-        data: {
-            action: 'get_lottery_details',
-            lottery_id: lotteryId
-        },
-        success: function(response) {
-            if (response.success) {
-                const lotteryDetails = response.data.data;
+            $.ajax({
+                url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                type: 'POST',
+                data: {
+                    action: 'get_lottery_details',
+                    lottery_id: lotteryId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        const lotteryDetails = response.data.data;
 
-                // Логируем для проверки
-                console.log("Данные лотереи:", lotteryDetails);
+                        // Логируем для проверки
+                        console.log("Данные лотереи:", lotteryDetails);
 
-                // HTML для информации о лотерее
-                let detailsHtml = `
-                    <div id="lottery-info">
-                        <p><strong>Номер розыгрыша:</strong> ${lotteryDetails.numberLottery || 'Неизвестный номер'}</p>
-                        <p><strong>Количество участников:</strong> ${lotteryDetails.participant_count || 'Неизвестно'}</p>
-                    </div>`;
-
-                // HTML для победных тикетов
-                detailsHtml += `<div id="lottery-winner-tickets" class="overflow-y-auto h-[525px] overflow-hidden mt-4">`;
-
-                if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
-                    lotteryDetails.winning_tickets.forEach(function(ticket) {
-                        detailsHtml += `
-                            <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
-                                <div class="flex flex-col gap-2 justify-start">
-                                    <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1">
-                                        <span class="font-bold text-lg text-white"> ${ticket.owner.fio} </span>
-                                        <span class="text-sm text-white font-regular w-full justify-start flex items-center sm:w-[35%] text-nowrap">${ticket.owner.region} </span>
-                                    </div>
-                                    <span class="text-md text-white"> ${ticket.owner.phone} </span>
-                                </div>
-                                <div>
-                                    <button onclick="openImageModal('${ticket.path}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
-                                        <span class="hidden sm:block">Показать чек</span>
-                                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
-                                    </button>
-                                </div>
+                        // HTML для информации о лотерее
+                        let detailsHtml = `
+                            <div id="lottery-info">
+                                <p><strong>Номер розыгрыша:</strong> ${lotteryDetails.numberLottery || 'Неизвестный номер'}</p>
+                                <p><strong>Количество участников:</strong> ${lotteryDetails.participant_count || 'Неизвестно'}</p>
                             </div>`;
-                    });
-                } else {
-                    detailsHtml += `<p>Победители не найдены.</p>`;
+
+                        // HTML для победных тикетов
+                        detailsHtml += `<div id="lottery-winner-tickets" class="overflow-y-auto h-[525px] overflow-hidden mt-4">`;
+
+                        if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
+                            lotteryDetails.winning_tickets.forEach(function(ticket) {
+                                detailsHtml += `
+                                    <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
+                                        <div class="flex flex-col gap-2 justify-start">
+                                            <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1">
+                                                <span class="font-bold text-lg text-white"> ${ticket.owner.fio} </span>
+                                                <span class="text-sm text-white font-regular w-full justify-start flex items-center sm:w-[35%] text-nowrap">${ticket.owner.region} </span>
+                                            </div>
+                                            <span class="text-md text-white"> ${ticket.owner.phone} </span>
+                                        </div>
+                                        <div>
+                                            <button onclick="openImageModal('${ticket.path}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
+                                                <span class="hidden sm:block">Показать чек</span>
+                                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
+                                            </button>
+                                        </div>
+                                    </div>`;
+                            });
+                        } else {
+                            detailsHtml += `<p>Победители не найдены.</p>`;
+                        }
+
+                        detailsHtml += `</div>`;
+
+                        // Вставляем сформированный HTML в контейнер
+                        $('#lottery-details-content').html(detailsHtml);
+                    } else {
+                        alert('Ошибка: ' + response.data.message);
+                    }
+                },
+                error: function() {
+                    alert('Произошла ошибка при запросе данных.');
                 }
-
-                detailsHtml += `</div>`;
-
-                // Вставляем сформированный HTML в контейнер
-                $('#lottery-details-content').html(detailsHtml);
-            } else {
-                alert('Ошибка: ' + response.data.message);
-            }
-        },
-        error: function() {
-            alert('Произошла ошибка при запросе данных.');
+            });
         }
-    });
-}
+
 
 
 

@@ -6,14 +6,9 @@ require_once 'mongodb-handler.php'; // подключение к MongoDB
 function handle_login_request() {
     header('Content-Type: application/json');
 
-    // Проверка типа запроса и AJAX-действия
+    // Проверка типа запроса
     if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['action']) || $_POST['action'] !== 'login_user') {
         return respond_with_error('Неправильный метод запроса');
-    }
-
-    if (!isset($_POST['h-captcha-response']) || !verify_hcaptcha($_POST['h-captcha-response'])) {
-        wp_send_json_error(array('message' => 'Ошибка валидации hCaptcha.'));
-        return;
     }
 
     // Получаем данные из POST
@@ -25,14 +20,31 @@ function handle_login_request() {
         return respond_with_error('Необходимо ввести телефон и пароль');
     }
 
-    // Проверяем пользователя
+    // Проверка блокировки IP-адреса для предотвращения брутфорс-атак
+    $ip_address = $_SERVER['REMOTE_ADDR'];
+    $failed_attempts = get_failed_attempts($ip_address); // Функция для получения количества неудачных попыток входа
+    $max_attempts = 5; // Максимальное количество попыток
+    $lockout_time = 15 * 60; // Время блокировки 15 минут
+
+    if ($failed_attempts >= $max_attempts) {
+        $last_attempt_time = get_last_attempt_time($ip_address); // Получаем время последней попытки
+        if (time() - $last_attempt_time < $lockout_time) {
+            return respond_with_error('Превышено количество попыток. Повторите через 15 минут.');
+        } else {
+            reset_failed_attempts($ip_address); // Сброс попыток после истечения времени блокировки
+        }
+    }
+
+    // Проверяем пользователя по номеру телефона
     $user = find_user_by_phone($phone);
     if (!$user) {
-        return respond_with_error('Пользователь с таким телефоном не найден');
+        log_failed_attempt($ip_address); // Логируем неудачную попытку
+        return respond_with_error('Пользователь не найден');
     }
 
     // Проверяем пароль
     if (!password_verify($password, $user['password'])) {
+        log_failed_attempt($ip_address); // Логируем неудачную попытку
         return respond_with_error('Неверный пароль');
     }
 
@@ -41,14 +53,25 @@ function handle_login_request() {
 
     // Устанавливаем куки с токеном и ID пользователя
     set_cookie('auth_token', $jwt); // Устанавливаем токен в куки
-    set_cookie('user_id', (string) $user['_id']); // Устанавливаем ID пользователя в куки
+    set_cookie('user_id', (string)$user['_id']); // Устанавливаем ID пользователя в куки
 
     // Возвращаем успешный ответ
     echo json_encode([
         'success' => true,
         'data' => [
             'token' => $jwt,
-            'user_id' => (string) $user['_id'],
+            'user_id' => (string)$user['_id'],
+        ],
+    ]);
+    exit;
+}
+
+// Вспомогательная функция для отправки ответа с ошибкой
+function respond_with_error($message) {
+    echo json_encode([
+        'success' => false,
+        'data' => [
+            'message' => $message,
         ],
     ]);
     exit;
@@ -78,15 +101,6 @@ function generate_jwt_for_user($user) {
 
     // Алгоритм шифрования — указываем 'HS256'
     return Firebase\JWT\JWT::encode($payload, $key, 'HS256');
-}
-
-// Функция для отправки ошибки в формате JSON
-function respond_with_error($message) {
-    echo json_encode([
-        'success' => false,
-        'data' => ['message' => $message]
-    ]);
-    exit;
 }
 
 // Проверка, является ли запросом на авторизацию
@@ -121,6 +135,19 @@ function handle_logout_request() {
 // Проверка, является ли запросом logout
 if (isset($_POST['action']) && $_POST['action'] === 'logout_user') {
     handle_logout_request();
+}
+
+// Логирование неудачных попыток и блокировка IP-адресов
+function log_failed_attempt($ip_address) {
+    // Логика записи неудачных попыток в базу данных или файл
+}
+
+function get_failed_attempts($ip_address) {
+    // Логика получения количества неудачных попыток по IP-адресу
+}
+
+function reset_failed_attempts($ip_address) {
+    // Логика сброса счетчика неудачных попыток
 }
 
 add_action('wp_ajax_logout_user', 'handle_logout_request');
