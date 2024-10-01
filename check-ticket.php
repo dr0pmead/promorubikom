@@ -176,7 +176,7 @@ $lotteryRecords = get_lottery_records();
                 x-transition:leave="transition transform ease-in-out duration-300"
                 x-transition:leave-start="translate-x-0 opacity-1" x-transition:leave-end="translate-x-[100%] opacity-0">
 
-                <button class="text-white mb-4 flex items-center justify-center gap-2 font-bold" @click="openDetails = false">
+                <button class="text-white mb-4 flex items-center justify-center gap-2 font-bold" @click="openDetails = false" id="clickCloseLotteryDetails">
                 <img src="<?php echo get_template_directory_uri(); ?>/assets/images/maki_arrow.svg" alt="party" class="w-6 rotate-180"> <span class="font-bold"> Назад </span>
                 </button>
 
@@ -278,99 +278,99 @@ jQuery(document).ready(function($) {
 
         // Логика розыгрыша при нажатии на кнопку "Разыграть"
         $('#start-lottery').on('click', function() {
-    var participantCount = $('#participant-count').val(); // Получаем количество участников
-    if (participantCount < 1 || participantCount > 1000) {
-        $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
-        return;
-    }
-
-    // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
-    $('#participant-count').hide();
-    $('#start-lottery').hide();
-    $('#modal-title').hide(); // Скрываем заголовок
-    $('#lottery-results-container').show(); // Показываем контейнер для анимации
-
-    // Показываем анимацию выбора победителей
-    $('#spinner-animation').show();
-    $('#winner-tickets').hide();
-
-    // Запускаем лотерею
-    $.ajax({
-        url: ajax_object.ajax_url,
-        type: 'POST',
-        data: {
-            action: 'start_lottery',
-            participant_count: participantCount
-        },
-        success: function(response) {
-            if (response.success) {
-                // Скрываем анимацию и запрашиваем последнюю лотерею
-                setTimeout(function() {
-                    $('#spinner-animation').hide(); // Скрываем анимацию
-                    fetchLatestLotteryDetails(); // После успешного розыгрыша запрашиваем последнюю лотерею
-                }, 3000); // Задержка в 3 секунды
-            } else {
-                $('#error-lottery').text('Ошибка: ' + response.data.message).show();
+            var participantCount = $('#participant-count').val(); // Получаем количество участников
+            if (participantCount < 1 || participantCount > 1000) {
+                $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
+                return;
             }
-        },
-        error: function() {
-            $('#error-lottery').text('Ошибка отправки данных на сервер').show();
-        }
-    });
-});
 
-// Функция получения деталей последней лотереи
-function fetchLatestLotteryDetails() {
-    $.ajax({
-        url: ajax_object.ajax_url,
-        type: 'POST',
-        data: {
-            action: 'get_latest_lottery_details'
-        },
-        success: function(response) {
-            if (response.success) {
-                const lotteryDetails = response.data.data;
+            // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
+            $('#participant-count').hide();
+            $('#start-lottery').hide();
+            $('#modal-title').hide(); // Скрываем заголовок
+            $('#lottery-results-container').show(); // Показываем контейнер для анимации
 
-                // Логируем для проверки
-                console.log("Данные последней лотереи:", lotteryDetails);
+            // Показываем анимацию выбора победителей
+            $('#spinner-animation').show();
+            $('#winner-tickets').hide();
 
-                // HTML для победных тикетов
-                let detailsHtml = `<div id="lottery-winner-tickets" class="overflow-y-auto h-auto overflow-hidden mt-4">`;
-
-                if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
-                    lotteryDetails.winning_tickets.forEach(function(ticket) {
-                        detailsHtml += `
-                            <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
-                                <div class="flex flex-col gap-2 justify-between w-full items-start">
-                                    <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1 w-full">
-                                        <span class="font-bold text-lg text-white text-nowrap w-full flex justify-start"> ${ticket.owner.fio} </span>
-                                        <span class="text-sm text-white font-regular w-full justify-start flex w-[70%] items-center leaging-[5px] text-nowrap">${ticket.owner.region} </span>
-                                    </div>
-                                    <span class="text-md text-white"> +7 (***) ***${ticket.owner.phone.slice(-5)} </span>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    detailsHtml += `<p>Победители не найдены.</p>`;
+            // Запускаем лотерею
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'start_lottery',
+                    participant_count: participantCount
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Скрываем анимацию и запрашиваем последнюю лотерею
+                        setTimeout(function() {
+                            $('#spinner-animation').hide(); // Скрываем анимацию
+                            fetchLatestLotteryDetails(); // После успешного розыгрыша запрашиваем последнюю лотерею
+                        }, 3000); // Задержка в 3 секунды
+                    } else {
+                        $('#error-lottery').text('Ошибка: ' + response.data.message).show();
+                    }
+                },
+                error: function() {
+                    $('#error-lottery').text('Ошибка отправки данных на сервер').show();
                 }
+            });
+        });
 
-                detailsHtml += `</div>`;
+        // Функция получения деталей последней лотереи
+        function fetchLatestLotteryDetails() {
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_latest_lottery_details'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        const lotteryDetails = response.data.data;
 
-                // Вставляем сформированный HTML в контейнер и показываем его
-                $('#winner-tickets').html(detailsHtml).show();
+                        // Логируем для проверки
+                        console.log("Данные последней лотереи:", lotteryDetails);
 
-                // Показать новый заголовок после завершения
-                $('#modal-title').text('Поздравляем победителей!').show();
-                $('#close-lottery').show(); // Показываем кнопку закрытия
-            } else {
-                alert('Ошибка: ' + response.data.message);
-            }
-        },
-        error: function() {
-            alert('Произошла ошибка при запросе данных.');
+                        // HTML для победных тикетов
+                        let detailsHtml = `<div id="lottery-winner-tickets" class="overflow-y-auto h-auto overflow-hidden mt-4">`;
+
+                        if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
+                            lotteryDetails.winning_tickets.forEach(function(ticket) {
+                                detailsHtml += `
+                                    <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
+                                        <div class="flex flex-col gap-2 justify-between w-full items-start">
+                                            <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1 w-full">
+                                                <span class="font-bold text-lg text-white text-nowrap w-full flex justify-start"> ${ticket.owner.fio} </span>
+                                                <span class="text-sm text-white font-regular w-full justify-start flex w-[70%] items-center leaging-[5px] text-nowrap">${ticket.owner.region} </span>
+                                            </div>
+                                            <span class="text-md text-white"> +7 (***) ***${ticket.owner.phone.slice(-5)} </span>
+                                        </div>
+                                    </div>`;
+                            });
+                        } else {
+                            detailsHtml += `<p>Победители не найдены.</p>`;
+                        }
+
+                        detailsHtml += `</div>`;
+
+                        // Вставляем сформированный HTML в контейнер и показываем его
+                        $('#winner-tickets').html(detailsHtml).show();
+
+                        // Показать новый заголовок после завершения
+                        $('#modal-title').text('Поздравляем победителей!').show();
+                        $('#close-lottery').show(); // Показываем кнопку закрытия
+                    } else {
+                        alert('Ошибка: ' + response.data.message);
+                    }
+                },
+                error: function() {
+                    alert('Произошла ошибка при запросе данных.');
+                }
+            });
         }
-    });
-}
 
         // Обработчик закрытия модального окна
         $('#close-lottery').on('click', function() {
@@ -499,71 +499,91 @@ function fetchLatestLotteryDetails() {
         }
 
         function fetchLotteryDetails(lotteryId) {
-            $.ajax({
-                url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                type: 'POST',
-                data: {
-                    action: 'get_lottery_details',
-                    lottery_id: lotteryId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        const lotteryDetails = response.data.data;
+                // Показываем спиннер перед началом загрузки
+                $('#lottery-details-content').html(`
+                    <div class="w-full flex items-center justify-center h-full">
+                        <span class="btn-spinner animate-spin h-5 w-5 mx-auto">
+                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z" fill="#fff"/>
+                            </svg>
+                        </span>
+                    </div>
+                `);
 
-                        // Логируем для проверки
-                        console.log("Данные лотереи:", lotteryDetails);
+                $.ajax({
+                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                    type: 'POST',
+                    data: {
+                        action: 'get_lottery_details',
+                        lottery_id: lotteryId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const lotteryDetails = response.data.data;
 
-                        // HTML для информации о лотерее
-                        let detailsHtml = `
-                            <div id="lottery-info">
-                                <p><strong>Номер розыгрыша:</strong> ${lotteryDetails.numberLottery || 'Неизвестный номер'}</p>
-                                <p><strong>Количество участников:</strong> ${lotteryDetails.participant_count || 'Неизвестно'}</p>
-                            </div>`;
+                            // HTML для информации о лотерее
+                            let detailsHtml = `
+                                <div id="lottery-info">
+                                    <p><strong>Номер розыгрыша:</strong> ${lotteryDetails.numberLottery || 'Неизвестный номер'}</p>
+                                    <p><strong>Количество участников:</strong> ${lotteryDetails.participant_count || 'Неизвестно'}</p>
+                                </div>`;
 
-                        // HTML для победных тикетов
-                        detailsHtml += `<div id="lottery-winner-tickets" class="overflow-y-auto h-[525px] overflow-hidden mt-4">`;
+                            // HTML для победных тикетов
+                            detailsHtml += `<div id="lottery-winner-tickets" class="overflow-y-auto h-[525px] overflow-hidden mt-4">`;
 
-                        if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
-                            lotteryDetails.winning_tickets.forEach(function(ticket) {
-                                detailsHtml += `
-                                    <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
-                                        <div class="flex flex-col gap-2 justify-start">
-                                            <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1">
-                                                <span class="font-bold text-lg text-white"> ${ticket.owner.fio} </span>
-                                                <span class="text-sm text-white font-regular w-full justify-start flex items-center sm:w-[35%] text-nowrap">${ticket.owner.region} </span>
+                            if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
+                                lotteryDetails.winning_tickets.forEach(function(ticket) {
+                                    detailsHtml += `
+                                        <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
+                                            <div class="flex flex-col gap-2 justify-start">
+                                                <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1">
+                                                    <span class="font-bold text-lg text-white"> ${ticket.owner.fio} </span>
+                                                    <span class="text-sm text-white font-regular w-full justify-start flex items-center sm:w-[35%] text-nowrap">${ticket.owner.region} </span>
+                                                </div>
+                                                <span class="text-md text-white"> ${ticket.owner.phone} </span>
                                             </div>
-                                            <span class="text-md text-white"> ${ticket.owner.phone} </span>
-                                        </div>
-                                        <div>
-                                            <button onclick="openImageModal('${ticket.path}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
-                                                <span class="hidden sm:block">Показать чек</span>
-                                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
-                                            </button>
-                                        </div>
-                                    </div>`;
-                            });
+                                            <div>
+                                                <button onclick="openImageModal('${ticket.path}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
+                                                    <span class="hidden sm:block">Показать чек</span>
+                                                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
+                                                </button>
+                                            </div>
+                                        </div>`;
+                                });
+                            } else {
+                                detailsHtml += `<p>Победители не найдены.</p>`;
+                            }
+
+                            detailsHtml += `</div>`;
+
+                            // Вставляем сформированный HTML в контейнер
+                            $('#lottery-details-content').html(detailsHtml);
                         } else {
-                            detailsHtml += `<p>Победители не найдены.</p>`;
+                            alert('Ошибка: ' + response.data.message);
                         }
-
-                        detailsHtml += `</div>`;
-
-                        // Вставляем сформированный HTML в контейнер
-                        $('#lottery-details-content').html(detailsHtml);
-                    } else {
-                        alert('Ошибка: ' + response.data.message);
+                    },
+                    error: function() {
+                        alert('Произошла ошибка при запросе данных.');
                     }
-                },
-                error: function() {
-                    alert('Произошла ошибка при запросе данных.');
-                }
+                });
+            }
+
+            $('#clickCloseLotteryDetails').on('click', function() {
+                // Очищаем контейнер с данными лотереи
+                $('#lottery-details-content').html(`
+                    <div class="w-full flex items-center justify-center h-full">
+                        <span class="btn-spinner hidden animate-spin h-5 w-5 mx-auto">
+                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z" fill="#fff"/>
+                            </svg>
+                        </span>
+                    </div>
+                `);
+
+                // Дополнительно можно сбросить другие переменные или состояние
             });
-        }
-
-
-
-
-        // Привязка функций к окнам и кнопкам
+ 
+            // Привязка функций к окнам и кнопкам
         window.deleteTicket = deleteTicket;
         window.approveTicket = approveTicket;
         window.openImageModal = openImageModal;
