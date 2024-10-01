@@ -1,17 +1,22 @@
 {
-    "name": "nikitka/promorubikom",
-    "description": "test",
+    "name": "dropmead/themes",
+    "description": "none",
     "type": "project",
-    "license": "mit",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dropmead\\Themes\\": "src/"
+        }
+    },
     "authors": [
         {
-            "name": "т"
+            "name": "me"
         }
     ],
     "minimum-stability": "stable",
     "require": {
-        "mongodb/mongodb": "^1.12",
         "firebase/php-jwt": "^6.10",
-        "phpoffice/phpspreadsheet": "^3.3"
+        "phpoffice/phpspreadsheet": "^3.3",
+        "mongodb/mongodb": "^1.20"
     }
 }

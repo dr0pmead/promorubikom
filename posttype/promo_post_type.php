@@ -38,7 +38,7 @@ function promo_conditions_meta_box() {
         'promo_conditions',
         'Условия акции',
         'render_promo_conditions_meta_box',
-        'promoactions',
+        'promoactions', // Ваш тип поста 'promoactions'
         'normal',
         'default'
     );
@@ -49,14 +49,23 @@ add_action('add_meta_boxes', 'promo_conditions_meta_box');
 // Рендерим метабокс
 function render_promo_conditions_meta_box($post) {
     // Получаем существующие условия (если они есть)
-    $conditions = get_post_meta($post->ID, 'promo_conditions', true);
+    $conditions = get_post_meta($post->ID, 'promo_conditions', true) ?: []; // Если пусто, задаем массив
     $selected_type = get_post_meta($post->ID, 'promo_condition_type', true);
 
     wp_nonce_field('save_promo_conditions', 'promo_conditions_nonce');
     ?>
     <div id="promo-conditions-container">
         <?php
-        if (!empty($conditions)) {
+        // Если условий ещё нет, добавляем хотя бы одно пустое поле
+        if (empty($conditions)) {
+            ?>
+            <div class="promo-condition">
+                <input type="text" name="promo_conditions[]" value="" class="widefat" />
+                <button type="button" class="remove-condition button">-</button>
+            </div>
+            <?php
+        } else {
+            // Выводим существующие условия
             foreach ($conditions as $condition) {
                 ?>
                 <div class="promo-condition">
@@ -92,26 +101,32 @@ function render_promo_conditions_meta_box($post) {
 
 // Сохраняем условия при сохранении поста
 function save_promo_conditions($post_id) {
+    // Проверяем nonce
     if (!isset($_POST['promo_conditions_nonce']) || !wp_verify_nonce($_POST['promo_conditions_nonce'], 'save_promo_conditions')) {
         return;
     }
 
+    // Проверяем автосохранение
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
     }
 
+    // Проверяем права доступа
     if (!current_user_can('edit_post', $post_id)) {
         return;
     }
 
+    // Сохраняем условия, если они заданы
     if (isset($_POST['promo_conditions'])) {
-        $conditions = array_map('sanitize_text_field', $_POST['promo_conditions']);
+        $conditions = array_map('sanitize_text_field', $_POST['promo_conditions']); // Очистка условий
         update_post_meta($post_id, 'promo_conditions', $conditions);
     }
 
+    // Сохраняем тип условия (текст или фото)
     if (isset($_POST['promo_condition_type'])) {
         update_post_meta($post_id, 'promo_condition_type', sanitize_text_field($_POST['promo_condition_type']));
     }
 }
 
 add_action('save_post', 'save_promo_conditions');
+
