@@ -207,7 +207,7 @@ $lotteryRecords = get_lottery_records();
             </div>
         </div>
 
-        <div class="lottery-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+        <div class="lottery-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc" data-remodal-options="hashTracking: false, closeOnOutsideClick: false"> <!-- Добавляем опцию closeOnOutsideClick: false -->
             <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Введите количество участников</h1>
             <div id="error-lottery" class="text-red-500 text-sm mb-4 hidden"></div>
 
@@ -237,6 +237,9 @@ $lotteryRecords = get_lottery_records();
                 <!-- Сюда будут вставлены победители -->
                 <div id="winner-tickets" class="text-white hidden"></div>
             </div>
+
+            <!-- Кнопка закрытия -->
+            <button id="close-lottery" class="bg-[#E53F0B] hover:bg-[#F35726] mt-6 text-white px-6 py-3 rounded-md w-full transition-colors font-bold hidden">Закрыть</button>
         </div>
 
     <script>
@@ -275,102 +278,108 @@ jQuery(document).ready(function($) {
 
         // Логика розыгрыша при нажатии на кнопку "Разыграть"
         $('#start-lottery').on('click', function() {
-            var participantCount = $('#participant-count').val(); // Получаем количество участников
-            if (participantCount < 1 || participantCount > 1000) {
-                $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
-                return;
+    var participantCount = $('#participant-count').val(); // Получаем количество участников
+    if (participantCount < 1 || participantCount > 1000) {
+        $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
+        return;
+    }
+
+    // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
+    $('#participant-count').hide();
+    $('#start-lottery').hide();
+    $('#modal-title').hide(); // Скрываем заголовок
+    $('#lottery-results-container').show(); // Показываем контейнер для анимации
+
+    // Показываем анимацию выбора победителей
+    $('#spinner-animation').show();
+    $('#winner-tickets').hide();
+
+    // Запускаем лотерею
+    $.ajax({
+        url: ajax_object.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'start_lottery',
+            participant_count: participantCount
+        },
+        success: function(response) {
+            if (response.success) {
+                // Скрываем анимацию и запрашиваем последнюю лотерею
+                setTimeout(function() {
+                    $('#spinner-animation').hide(); // Скрываем анимацию
+                    fetchLatestLotteryDetails(); // После успешного розыгрыша запрашиваем последнюю лотерею
+                }, 3000); // Задержка в 3 секунды
+            } else {
+                $('#error-lottery').text('Ошибка: ' + response.data.message).show();
             }
-
-            // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
-            $('#participant-count').hide();
-            $('#start-lottery').hide();
-            $('#modal-title').hide(); // Скрываем заголовок
-            $('#lottery-results-container').show(); // Показываем контейнер для анимации
-
-            // Показываем анимацию выбора победителей
-            $('#spinner-animation').show();
-            $('#winner-tickets').hide();
-
-            // Запускаем лотерею
-            $.ajax({
-                url: ajax_object.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'start_lottery',
-                    participant_count: participantCount
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Скрываем анимацию и запрашиваем последнюю лотерею
-                        setTimeout(function() {
-                            $('#spinner-animation').hide(); // Скрываем анимацию
-                            fetchLatestLotteryDetails(); // После успешного розыгрыша запрашиваем последнюю лотерею
-                        }, 3000); // Задержка в 3 секунды
-                    } else {
-                        $('#error-lottery').text('Ошибка: ' + response.data.message).show();
-                    }
-                },
-                error: function() {
-                    $('#error-lottery').text('Ошибка отправки данных на сервер').show();
-                }
-            });
-        });
-
-        // Функция получения деталей последней лотереи
-        function fetchLatestLotteryDetails() {
-            $.ajax({
-                url: ajax_object.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'get_latest_lottery_details'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        const lotteryDetails = response.data.data;
-
-                        // Логируем для проверки
-                        console.log("Данные последней лотереи:", lotteryDetails);
-
-                        // HTML для победных тикетов
-                        let detailsHtml = `<div id="lottery-winner-tickets" class="overflow-y-auto h-auto overflow-hidden mt-4">`;
-
-                        if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
-                            lotteryDetails.winning_tickets.forEach(function(ticket) {
-                                detailsHtml += `
-                                    <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
-                                        <div class="flex flex-col gap-2 justify-between w-full items-start">
-                                            <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1 w-full">
-                                                <span class="font-bold text-lg text-white text-nowrap w-full"> ${ticket.owner.fio} </span>
-                                                <span class="text-sm text-white font-regular w-full justify-start flex w-[70%] items-center leaging-[5px] text-nowrap">${ticket.owner.region} </span>
-                                            </div>
-                                            <span class="text-md text-white"> +7 (***) ***${ticket.owner.phone.slice(-5)} </span>
-                                        </div>
-                                    </div>`;
-                            });
-                        } else {
-                            detailsHtml += `<p>Победители не найдены.</p>`;
-                        }
-
-                        detailsHtml += `</div>`;
-
-                        // Вставляем сформированный HTML в контейнер и показываем его
-                        $('#winner-tickets').html(detailsHtml).show();
-
-                        // Показать новый заголовок после завершения
-                        $('#modal-title').text('Поздравляем победителей!').show();
-                    } else {
-                        alert('Ошибка: ' + response.data.message);
-                    }
-                },
-                error: function() {
-                    alert('Произошла ошибка при запросе данных.');
-                }
-            });
+        },
+        error: function() {
+            $('#error-lottery').text('Ошибка отправки данных на сервер').show();
         }
+    });
+});
+
+// Функция получения деталей последней лотереи
+function fetchLatestLotteryDetails() {
+    $.ajax({
+        url: ajax_object.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'get_latest_lottery_details'
+        },
+        success: function(response) {
+            if (response.success) {
+                const lotteryDetails = response.data.data;
+
+                // Логируем для проверки
+                console.log("Данные последней лотереи:", lotteryDetails);
+
+                // HTML для победных тикетов
+                let detailsHtml = `<div id="lottery-winner-tickets" class="overflow-y-auto h-auto overflow-hidden mt-4">`;
+
+                if (lotteryDetails.winning_tickets && lotteryDetails.winning_tickets.length > 0) {
+                    lotteryDetails.winning_tickets.forEach(function(ticket) {
+                        detailsHtml += `
+                            <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
+                                <div class="flex flex-col gap-2 justify-between w-full items-start">
+                                    <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1 w-full">
+                                        <span class="font-bold text-lg text-white text-nowrap w-full flex justify-start"> ${ticket.owner.fio} </span>
+                                        <span class="text-sm text-white font-regular w-full justify-start flex w-[70%] items-center leaging-[5px] text-nowrap">${ticket.owner.region} </span>
+                                    </div>
+                                    <span class="text-md text-white"> +7 (***) ***${ticket.owner.phone.slice(-5)} </span>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    detailsHtml += `<p>Победители не найдены.</p>`;
+                }
+
+                detailsHtml += `</div>`;
+
+                // Вставляем сформированный HTML в контейнер и показываем его
+                $('#winner-tickets').html(detailsHtml).show();
+
+                // Показать новый заголовок после завершения
+                $('#modal-title').text('Поздравляем победителей!').show();
+                $('#close-lottery').show(); // Показываем кнопку закрытия
+            } else {
+                alert('Ошибка: ' + response.data.message);
+            }
+        },
+        error: function() {
+            alert('Произошла ошибка при запросе данных.');
+        }
+    });
+}
 
         // Обработчик закрытия модального окна
-        $('[data-remodal-id="modal-lottery"]').on('closed', function() {
+        $('#close-lottery').on('click', function() {
             // Сбрасываем состояние модального окна при закрытии
+            let modalInstance = $('[data-remodal-id="modal-lottery"]').remodal();
+            modalInstance.close(); // Закрываем модальное окно
+            setTimeout(function() {
+                location.reload(); // Перезагружаем страницу
+            }, 500); // Небольшая задержка для плавного закрытия
             $('#participant-count').val('').show(); // Восстанавливаем поле ввода
             $('#start-lottery').show(); // Восстанавливаем кнопку
             $('#modal-title').text('Введите количество участников').show(); // Восстанавливаем начальный заголовок
@@ -378,6 +387,7 @@ jQuery(document).ready(function($) {
             $('#spinner-animation').hide(); // Скрываем анимацию
             $('#winner-tickets').hide(); // Скрываем победителей
             $('#error-lottery').hide(); // Скрываем сообщение об ошибке
+            $('#close-lottery').hide(); // Скрываем кнопку закрытия
         });
 
         // Функция для удаления тикета
