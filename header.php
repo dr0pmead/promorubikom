@@ -244,87 +244,83 @@ jQuery(document).ready(function($) {
     $('#registration-form').on('submit', function(e) {
         e.preventDefault(); // Предотвращаем стандартную отправку формы
 
-        // Проверяем, загрузилась ли hCaptcha
-        if (typeof hcaptcha !== 'undefined') {
-            // Получаем токен hCaptcha, передавая строковый ID
-            var hcaptchaResponse = hcaptcha.getResponse('hcaptcha-register');
+        // Получаем токен hCaptcha без передачи ID
+        var hcaptchaResponse = hcaptcha.getResponse();
 
-            // Проверяем, прошла ли валидация hCaptcha
-            if (!hcaptchaResponse) {
-                $('#error-message').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
-                return;
-            }
+        // Проверяем, прошла ли валидация hCaptcha
+        if (!hcaptchaResponse) {
+            $('#error-message').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
+            return;
+        }
 
-            var formData = $(this).serialize(); // Собираем данные формы
-            formData += '&h-captcha-response=' + hcaptchaResponse;
+        var formData = $(this).serialize(); // Собираем данные формы
+        formData += '&h-captcha-response=' + hcaptchaResponse;
 
-            // Показываем спиннер и скрываем текст кнопки
-            $('#submit-registration .btn-text').prop('disabled', true);
-            $('#submit-registration .btn-text').addClass('hidden');
-            $('#submit-registration .btn-spinner').removeClass('hidden');
+        // Показываем спиннер и скрываем текст кнопки
+        $('#submit-registration .btn-text').prop('disabled', true);
+        $('#submit-registration .btn-text').addClass('hidden');
+        $('#submit-registration .btn-spinner').removeClass('hidden');
 
-            $.ajax({
-                url: ajax_object.ajax_url,
-                type: 'POST',
-                data: formData + '&action=register_user', // Отправляем данные и указываем действие
-                success: function(response) {
-                    if (response.success) {
-                        // Закрываем модальное окно регистрации
-                        let remodalInstance = $('[data-remodal-id="modal-register"]').remodal();
-                        remodalInstance.close(); // Закрываем окно регистрации
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: formData + '&action=register_user', // Отправляем данные и указываем действие
+            success: function(response) {
+                if (response.success) {
+                    // Закрываем модальное окно регистрации
+                    let remodalInstance = $('[data-remodal-id="modal-register"]').remodal();
+                    remodalInstance.close(); // Закрываем окно регистрации
 
-                        // Открываем новое модальное окно с паролем
-                        let passwordModalInstance = $('[data-remodal-id="modal-password"]').remodal();
-                        passwordModalInstance.open(); // Открываем окно с паролем
+                    // Открываем новое модальное окно с паролем
+                    let passwordModalInstance = $('[data-remodal-id="modal-password"]').remodal();
+                    passwordModalInstance.open(); // Открываем окно с паролем
 
-                        // Обновляем сгенерированный пароль в окне
-                        $('#generated-password').text(response.data.password);
+                    // Обновляем сгенерированный пароль в окне
+                    $('#generated-password').text(response.data.password);
 
-                        // Таймер
-                        let countdown = 15;
-                        $('#close-password-modal').prop('disabled', true).text('Закрыть (' + countdown + ')');
-                        let timer = setInterval(function() {
-                            countdown--;
-                            $('#close-password-modal').text('Закрыть (' + countdown + ')');
-                            if (countdown <= 0) {
-                                clearInterval(timer);
-                                $('#close-password-modal').prop('disabled', false).text('Закрыть');
-                            }
-                        }, 1000);
+                    // Таймер
+                    let countdown = 15;
+                    $('#close-password-modal').prop('disabled', true).text('Закрыть (' + countdown + ')');
+                    let timer = setInterval(function() {
+                        countdown--;
+                        $('#close-password-modal').text('Закрыть (' + countdown + ')');
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            $('#close-password-modal').prop('disabled', false).text('Закрыть');
+                        }
+                    }, 1000);
 
-                        // Добавляем обработчик для закрытия модального окна при нажатии на кнопку
-                        $(document).on('click', '#close-password-modal', function() {
-                            if (!$('#close-password-modal').prop('disabled')) {
-                                // Закрываем модальное окно с паролем после завершения таймера
-                                passwordModalInstance.close();
-                            }
-                        });
+                    // Добавляем обработчик для закрытия модального окна при нажатии на кнопку
+                    $(document).on('click', '#close-password-modal', function() {
+                        if (!$('#close-password-modal').prop('disabled')) {
+                            // Закрываем модальное окно с паролем после завершения таймера
+                            passwordModalInstance.close();
+                        }
+                    });
 
-                    } else {
-                        // Выводим сообщение об ошибке в модальное окно
-                        $('#error-message').text('Ошибка регистрации: ' + response.data.message).fadeIn();
+                } else {
+                    // Выводим сообщение об ошибке в модальное окно
+                    $('#error-message').text('Ошибка регистрации: ' + response.data.message).fadeIn();
 
-                        // Восстанавливаем кнопку и убираем спиннер
-                        $('#submit-registration .btn-text').prop('disabled', false);
-                        $('#submit-registration .btn-text').removeClass('hidden');
-                        $('#submit-registration .btn-spinner').addClass('hidden');
-                    }
-                },
-                error: function() {
-                    // Выводим общую ошибку, если запрос не прошел
-                    $('#error-message').text('Ошибка отправки данных на сервер.').fadeIn();
-
-                    // Восстанавливаем текст кнопки и убираем спиннер
+                    // Восстанавливаем кнопку и убираем спиннер
                     $('#submit-registration .btn-text').prop('disabled', false);
                     $('#submit-registration .btn-text').removeClass('hidden');
                     $('#submit-registration .btn-spinner').addClass('hidden');
                 }
-            });
-        } else {
-            $('#error-message').text('Ошибка: hCaptcha не инициализирована.');
-        }
+            },
+            error: function() {
+                // Выводим общую ошибку, если запрос не прошел
+                $('#error-message').text('Ошибка отправки данных на сервер.').fadeIn();
+
+                // Восстанавливаем текст кнопки и убираем спиннер
+                $('#submit-registration .btn-text').prop('disabled', false);
+                $('#submit-registration .btn-text').removeClass('hidden');
+                $('#submit-registration .btn-spinner').addClass('hidden');
+            }
+        });
     });
 });
+
 
 
 jQuery(document).ready(function($) {
