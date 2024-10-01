@@ -57,7 +57,7 @@ get_header();
                         // Выводим самый популярный регион
                         echo '<div class="flex justify-between text-white font-bold text-lg mb-4 border-b-[1px] border-b-[#fff]/10 pb-4">';
                         echo '<span>Самый популярный регион:</span>';
-                        echo '<span>' . htmlspecialchars($regionData['mostPopularRegion'] ?? 'Неизвестный регион') . '</span>';
+                        echo '<span>' . htmlspecialchars($regionData['mostPopularRegion'] ?? 'Нет данных') . '</span>';
                         echo '</div>';
 
                         // Вставляем место для диаграммы
