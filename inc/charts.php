@@ -8,7 +8,7 @@ function get_mongo_chart_data() {
         return json_encode(['error' => 'Ошибка подключения к MongoDB']);
     }
 
-    $collection = $db->tickets;
+    $collection = $db->statistics;
 
     try {
         $results = $collection->aggregate([
@@ -84,7 +84,7 @@ add_shortcode('mongo_apexchart', 'render_mongo_apexchart');
 
 function get_region_statistics() {
     $db = get_mongo_connection();
-    $ticketsCollection = $db->tickets;
+    $ticketsCollection = $db->statistics;
 
     try {
         $pipeline = [
@@ -127,7 +127,7 @@ function get_region_statistics() {
 
 function get_age_statistics() {
     $db = get_mongo_connection();
-    $ticketsCollection = $db->tickets;
+    $ticketsCollection = $db->statistics;
 
     try {
         $pipeline = [
@@ -178,7 +178,7 @@ function get_age_statistics() {
 
 function get_gender_statistics() {
     $db = get_mongo_connection();
-    $ticketsCollection = $db->tickets;
+    $ticketsCollection = $db->statistics;
 
     try {
         $pipeline = [

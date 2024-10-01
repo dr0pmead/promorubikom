@@ -88,7 +88,7 @@ get_header();
 
                 <!-- Поле для ввода имени -->
                 <div class="mb-4">
-                    <input type="text" name="fio" placeholder="Имя фамилия" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>
+                    <input type="text" name="fio" placeholder="Ваше имя" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>
                 </div>
 
                 <!-- Поле для выбора региона -->

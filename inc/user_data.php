@@ -130,23 +130,55 @@ function delete_ticket() {
 // Для принятия тикета
 add_action('wp_ajax_approve_ticket', 'approve_ticket'); // Для авторизованных пользователей
 add_action('wp_ajax_nopriv_approve_ticket', 'approve_ticket'); // Для неавторизованных пользователей
+
 function approve_ticket() {
     if (!isset($_POST['ticket_id'])) {
         wp_send_json_error(['message' => 'Не указан ID тикета']);
+        return;
     }
 
     $ticketId = sanitize_text_field($_POST['ticket_id']);
 
-    // Подключаемся к MongoDB и обновляем статус тикета
-    $collection = get_mongo_connection()->tickets;
+    // Подключаемся к MongoDB
+    $db = get_mongo_connection();
+    $ticketsCollection = $db->tickets;
+    $statisticsCollection = $db->statistics;
 
-    $result = $collection->updateOne(
+    // Ищем тикет по ID
+    $ticket = $ticketsCollection->findOne(['_id' => new MongoDB\BSON\ObjectId($ticketId)]);
+
+    if (!$ticket) {
+        wp_send_json_error(['message' => 'Тикет не найден']);
+        return;
+    }
+
+    // Обновляем статус тикета в коллекции tickets
+    $result = $ticketsCollection->updateOne(
         ['_id' => new MongoDB\BSON\ObjectId($ticketId)],
         ['$set' => ['status' => 'approved']]
     );
 
     if ($result->getModifiedCount() > 0) {
-        wp_send_json_success(['message' => 'Тикет успешно обновлен']);
+        // Дублируем тикет в коллекцию statistics
+        try {
+            // Копируем все поля тикета, добавляя дату копирования
+            $statisticsCollection->insertOne([
+                'ticket_id' => (string)$ticket['_id'],
+                'ticket_number' => $ticket['ticket_number'],
+                'phone' => $ticket['phone'],
+                'fio' => $ticket['fio'],
+                'region' => $ticket['region'],
+                'age' => $ticket['age'],
+                'gender' => $ticket['gender'],
+                'path' => $ticket['path_to'],
+                'status' => 'approved', // Статус "approved" для дубликата
+                'upload_date' => $ticket['upload_date'],
+            ]);
+
+            wp_send_json_success(['message' => 'Тикет успешно обновлен и дублирован']);
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Ошибка при дублировании тикета: ' . $e->getMessage()]);
+        }
     } else {
         wp_send_json_error(['message' => 'Ошибка изменения статуса тикета']);
     }
@@ -344,3 +376,45 @@ function get_lottery_details() {
     }
 }
 
+function get_latest_lottery_details() {
+    // Подключаемся к MongoDB
+    $db = get_mongo_connection();
+    $lotteryCollection = $db->lottery;
+
+    try {
+        // Ищем последнюю лотерею (по дате создания)
+        $latestLottery = $lotteryCollection->findOne([], ['sort' => ['date' => -1]]);
+
+        if ($latestLottery) {
+            // Подготавливаем данные для фронтенда
+            $formattedWinningTickets = [];
+
+            foreach ($latestLottery['winning_tickets'] as $ticket) {
+                $formattedWinningTickets[] = [
+                    'ticket_id' => (string) $ticket['ticket_id'],
+                    'path' => $ticket['path'],
+                    'owner' => [
+                        'fio' => $ticket['owner']['fio'],
+                        'phone' => $ticket['owner']['phone'],
+                        'region' => $ticket['owner']['region']
+                    ]
+                ];
+            }
+
+            // Возвращаем данные лотереи
+            wp_send_json_success(['data' => [
+                'numberLottery' => $latestLottery['numberLottery'],
+                'participant_count' => $latestLottery['participant_count'],
+                'winning_tickets' => $formattedWinningTickets
+            ]]);
+        } else {
+            wp_send_json_error(['message' => 'Лотерея не найдена']);
+        }
+    } catch (Exception $e) {
+        wp_send_json_error(['message' => 'Ошибка при запросе данных: ' . $e->getMessage()]);
+    }
+}
+
+// Подключаем обработчик для AJAX
+add_action('wp_ajax_get_latest_lottery_details', 'get_latest_lottery_details');
+add_action('wp_ajax_nopriv_get_latest_lottery_details', 'get_latest_lottery_details');

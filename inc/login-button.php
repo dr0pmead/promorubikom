@@ -38,10 +38,6 @@ function get_user_button_html() {
                          x-transition:leave-start="opacity-100 transform translate-y-0"
                          x-transition:leave-end="opacity-0 transform -translate-y-4"
                          class="absolute right-0 mt-2 w-[200px] bg-[#131313]/50 border-[1px] border-[#fff]/10 rounded-lg shadow-lg z-10 top-[40px] left-0 backdrop-blur-md">
-                         <a href="/dashboard" class="flex px-4 py-2 text-sm text-white hover:bg-[#fff]/10 rounded-t-lg gap-3 items-center ">
-                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mdi_account.svg" alt="User Icon" class="w-6">Личный кабинет
-                        </a>
-
                         <?php if (is_mongo_user_admin()) : ?>
                         <a href="/admin-panel" class="flex px-4 py-2 text-sm text-white hover:bg-[#fff]/10 gap-3 items-center ">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/fluent_ticket-diagonal-28-filled.svg" alt="Ticket Icon" class="w-6">Панель управления
