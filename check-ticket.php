@@ -209,7 +209,7 @@ $lotteryRecords = get_lottery_records();
 
     <div class="lottery-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
         <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Введите количество участников</h1>
-
+        <div id="error-lottery" class="text-red-500 text-sm mb-4 hidden"></div>
         <!-- Поле ввода количества участников -->
         <input type="number" id="participant-count" class="w-full px-4 py-2 mb-6 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Количество участников (0-1000)" min="0" max="1000">
 
@@ -265,6 +265,7 @@ jQuery(document).ready(function($) {
             modalInstance.open();
         });
 
+
         // Логика розыгрыша при нажатии на кнопку "Разыграть"
         $('#start-lottery').on('click', function() {
             var participantCount = $('#participant-count').val();
@@ -285,15 +286,18 @@ jQuery(document).ready(function($) {
                     },
                     success: function(response) {
                         if (response.success) {
+                            // Успешное завершение розыгрыша
                             alert('Розыгрыш завершен! Победители выбраны.');
-                            let remodalInstance = $('[data-remodal-id="start-lottery"]').remodal();
+                            let remodalInstance = $('[data-remodal-id="modal-lottery"]').remodal();
                             remodalInstance.close();
                         } else {
-                            alert('Ошибка: ' + response.data.message);
+                            // Если ошибка — выводим сообщение в модальном окне
+                            $('#error-lottery').text(response.data.message).fadeIn();
                         }
                     },
                     error: function() {
-                        alert('Произошла ошибка при попытке выполнения розыгрыша.');
+                        // Ошибка соединения или сервера
+                        $('#error-lottery').text('Произошла ошибка при попытке выполнения розыгрыша.').fadeIn();
                     },
                     complete: function() {
                         // Восстановление кнопки после завершения операции
@@ -303,7 +307,8 @@ jQuery(document).ready(function($) {
                     }
                 });
             } else {
-                alert('Введите корректное количество участников (от 1 до 1000).');
+                // Некорректное количество участников
+                $('#error-lottery').text('Введите корректное количество участников (от 1 до 1000).').fadeIn();
                 $('#start-lottery .btn-text').prop('disabled', false);
                 $('#start-lottery .btn-text').removeClass('hidden');
                 $('#start-lottery .btn-spinner').addClass('hidden');
