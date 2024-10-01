@@ -211,7 +211,7 @@ $lotteryRecords = get_lottery_records();
         <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Введите количество участников</h1>
         <div id="error-lottery" class="text-red-500 text-sm mb-4 hidden"></div>
         <!-- Поле ввода количества участников -->
-        <input type="number" id="participant-count" class="w-full px-4 py-2 mb-6 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Количество участников (0-1000)" min="0" max="1000">
+        <input type="number" id="participant-count" class="w-full px-4 py-2 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Количество участников (0-1000)" min="0" max="1000">
 
         <!-- Кнопка "Разыграть" -->
         <button id="start-lottery" class="bg-[#E53F0B] hover:bg-[#F35726] mt-6 text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
