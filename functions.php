@@ -339,3 +339,22 @@ function verify_hcaptcha_on_login($user, $password) {
 }
 add_filter('authenticate', 'verify_hcaptcha_on_login', 30, 2);
 
+function verify_hcaptcha_on_registration($hcaptcha_response) {
+    // hCaptcha секретный ключ
+    $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
+
+    // Запрос к hCaptcha API для проверки токена
+    $response = wp_remote_post('https://hcaptcha.com/siteverify', array(
+        'body' => array(
+            'secret' => $secret_key,
+            'response' => $hcaptcha_response
+        )
+    ));
+
+    // Получаем ответ от hCaptcha API
+    $response_body = wp_remote_retrieve_body($response);
+    $result = json_decode($response_body);
+
+    // Проверка успешности валидации hCaptcha
+    return isset($result->success) && $result->success;
+}

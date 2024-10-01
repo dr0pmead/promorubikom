@@ -2,13 +2,21 @@
 require_once 'mongodb-handler.php'; // Подключение к MongoDB
 
 function handle_user_registration() {
-    if (isset($_POST['phone'], $_POST['fio'], $_POST['region'], $_POST['age'], $_POST['gender'])) {
-        // Получение данных из формы
+    if (isset($_POST['phone'], $_POST['fio'], $_POST['region'], $_POST['age'], $_POST['gender'], $_POST['h-captcha-response'])) {
+        
+        // Получаем данные формы
         $phone = sanitize_text_field($_POST['phone']);
         $fio = sanitize_text_field($_POST['fio']);
         $region = sanitize_text_field($_POST['region']);
         $age = sanitize_text_field($_POST['age']);
         $gender = sanitize_text_field($_POST['gender']);
+        $hcaptcha_response = sanitize_text_field($_POST['h-captcha-response']);
+
+        // Проверка hCaptcha
+        if (!verify_hcaptcha_on_registration($hcaptcha_response)) {
+            wp_send_json_error(array('message' => 'Проверка hCaptcha не пройдена. Пожалуйста, подтвердите, что вы не робот.'));
+            return;
+        }
 
         // Проверка, существует ли уже пользователь с таким номером телефона
         if (user_exists_by_phone($phone)) {
@@ -16,35 +24,11 @@ function handle_user_registration() {
             return;
         }
 
-        // Проверка hCaptcha
-        if (isset($_POST['h-captcha-response'])) {
-            $hcaptcha_response = $_POST['h-captcha-response'];
-            $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
-
-            $response = wp_remote_post("https://hcaptcha.com/siteverify", array(
-                'body' => array(
-                    'secret' => $secret_key,
-                    'response' => $hcaptcha_response,
-                )
-            ));
-
-            $response_body = wp_remote_retrieve_body($response);
-            $result = json_decode($response_body, true);
-
-            if (!$result['success']) {
-                wp_send_json_error(array('message' => 'Проверка hCaptcha не пройдена.'));
-                return;
-            }
-        } else {
-            wp_send_json_error(array('message' => 'Пожалуйста, пройдите проверку hCaptcha.'));
-            return;
-        }
-
         // Генерация случайного пароля
         $password = generate_random_password(6);
 
-        // Сохранение данных в MongoDB с полем admin по умолчанию false
-        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false); // Передаем false для admin
+        // Сохранение данных в MongoDB
+        $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false);
 
         if ($saved) {
             // Отправляем успешный ответ с паролем
