@@ -135,6 +135,12 @@
         <div id="error-message" class="text-sm text-white mb-4 hidden"></div>
 
         <form id="registration-form" method="POST">
+            <div class="hidden-honeypot" style="display:none;">
+                <input type="text" name="bot_field" value="">
+            </div>
+
+            <input type="hidden" name="form_time" id="form_time" value="<?php echo time(); ?>">
+            
             <!-- Поле для ввода телефона -->
             <div class="mb-4">
                 <input type="tel" name="phone" placeholder="+7 777 777 77 77" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>

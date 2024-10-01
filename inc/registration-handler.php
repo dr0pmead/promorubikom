@@ -2,13 +2,23 @@
 require_once 'mongodb-handler.php'; // Подключение к MongoDB
 
 function handle_user_registration() {
+    if (isset($_POST['form_time']) && is_form_submitted_too_fast(intval($_POST['form_time']))) {
+        wp_send_json_error(array('message' => 'Форма отправлена слишком быстро. Попробуйте снова.'));
+        return;
+    }
+
     if (isset($_POST['phone'], $_POST['fio'], $_POST['region'], $_POST['age'], $_POST['gender'])) {
-        // Получение данных из формы
         $phone = sanitize_text_field($_POST['phone']);
         $fio = sanitize_text_field($_POST['fio']);
         $region = sanitize_text_field($_POST['region']);
         $age = sanitize_text_field($_POST['age']);
         $gender = sanitize_text_field($_POST['gender']);
+
+        // Проверка частоты запросов
+        if (is_rate_limited($phone)) {
+            wp_send_json_error(array('message' => 'Слишком много запросов. Попробуйте позже.'));
+            return;
+        }
 
         // Проверка, существует ли уже пользователь с таким номером телефона
         if (user_exists_by_phone($phone)) {
@@ -23,13 +33,33 @@ function handle_user_registration() {
         $saved = save_user_to_mongo($phone, $fio, $region, $age, $gender, $password, false); // Передаем false для admin
 
         if ($saved) {
-            // Отправляем успешный ответ с паролем
             wp_send_json_success(array('password' => $password));
         } else {
             wp_send_json_error(array('message' => 'Не удалось сохранить данные в базу.'));
         }
     } else {
         wp_send_json_error(array('message' => 'Не все поля заполнены.'));
+    }
+}
+
+
+function is_form_submitted_too_fast($form_time) {
+    $current_time = time();
+    $minimum_time = 3; // Минимум 3 секунды
+    return ($current_time - $form_time < $minimum_time);
+}
+
+
+function is_rate_limited($phone) {
+    $transient_name = 'rate_limit_' . md5($phone);
+    
+    // Проверяем, есть ли запись в базе для этого номера телефона
+    if (get_transient($transient_name)) {
+        return true; // Ограничение частоты, возвращаем ошибку
+    } else {
+        // Устанавливаем временное ограничение на повторную регистрацию (например, 60 секунд)
+        set_transient($transient_name, true, 60); // 60 секунд
+        return false; // Не ограничиваем, продолжаем процесс
     }
 }
 
