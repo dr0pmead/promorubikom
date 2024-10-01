@@ -16,6 +16,30 @@ function handle_user_registration() {
             return;
         }
 
+        // Проверка hCaptcha
+        if (isset($_POST['h-captcha-response'])) {
+            $hcaptcha_response = $_POST['h-captcha-response'];
+            $secret_key = 'ES_2d3cbf46ed124408a9002a88605ab990';
+
+            $response = wp_remote_post("https://hcaptcha.com/siteverify", array(
+                'body' => array(
+                    'secret' => $secret_key,
+                    'response' => $hcaptcha_response,
+                )
+            ));
+
+            $response_body = wp_remote_retrieve_body($response);
+            $result = json_decode($response_body, true);
+
+            if (!$result['success']) {
+                wp_send_json_error(array('message' => 'Проверка hCaptcha не пройдена.'));
+                return;
+            }
+        } else {
+            wp_send_json_error(array('message' => 'Пожалуйста, пройдите проверку hCaptcha.'));
+            return;
+        }
+
         // Генерация случайного пароля
         $password = generate_random_password(6);
 

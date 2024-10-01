@@ -182,6 +182,10 @@
                 </label>
             </div>
 
+            <div class="w-full flex items-center justify-center">
+                <div id="hcaptcha-register" class="h-captcha" data-sitekey="7fae0340-2930-422c-aefe-e4ce125e2c0a"></div>
+            </div>
+
             <!-- Кнопка регистрации -->
             <button type="submit" id="submit-registration" class="disabled:bg-[#E53F0B]/50 bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold flex items-center justify-center">
                 <span class="btn-text">Зарегистрироваться</span>
@@ -195,7 +199,7 @@
     </div>
 
     <!-- Окно показа пароля -->
-    <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-password" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="auth-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-password" data-remodal-options="hashTracking: false, closeOnOutsideClick: false, closeOnEscape: false" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc">
         <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Ваш код для входа</h1>
         <p class="text-lg text-white mb-4">Ваш 6-значный код: <strong id="generated-password">RANDOM_CODE</strong></p>
         <p class="text-sm text-gray-400">Этот код будет отображаться в течение 15 секунд.</p>
@@ -240,7 +244,17 @@ jQuery(document).ready(function($) {
     $('#registration-form').on('submit', function(e) {
         e.preventDefault(); // Предотвращаем стандартную отправку формы
 
+        // Получаем токен hCaptcha, передавая строковый ID
+        var hcaptchaResponse = hcaptcha.getResponse('hcaptcha-register');
+
+        // Проверяем, прошла ли валидация hCaptcha
+        if (!hcaptchaResponse) {
+            $('#error-message').text('Пожалуйста, подтвердите, что вы не робот.').fadeIn();
+            return;
+        }
+
         var formData = $(this).serialize(); // Собираем данные формы
+        formData += '&h-captcha-response=' + hcaptchaResponse;
 
         // Показываем спиннер и скрываем текст кнопки
         $('#submit-registration .btn-text').prop('disabled', true);
@@ -485,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
         customDropdownDesktop.classList.add('w-[115px]');
         customDropdownDesktop.innerHTML = `
             <div x-data="{ open: false, selectedLang: '${selectedLanguage}' }" class="relative hidden xl:block">
-                <button @click="open = !open" class="text-sm p-2 rounded-lg flex gap-2 items-center group">
+                <button @click="open = !open" class="text-sm p-2 rounded-lg flex gap-2 items-center group max-w-lg">
                     <span id="desktop-lang" x-text="selectedLang" class="text-white font-bold text-sm group-hover:opacity-[100%] opacity-[60%] duration-150 uppercase leading-[5px] text-nowrap"></span>
                     <span>
                       <img src="<?php echo get_template_directory_uri(); ?>/assets/images/material-symbols_language.svg" alt="Language Icon" class="duration-150 w-8 max-w-8 w-auto object-contain group-hover:opacity-[100%] opacity-[60%]">
