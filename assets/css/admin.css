@@ -1,0 +1,29 @@
+.promo-condition {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* расстояние между полем и кнопкой */
+}
+
+.condition-input {
+    flex-grow: 1; /* поле ввода займет всю оставшуюся ширину */
+}
+
+.remove-condition {
+    background-color: #ff4a1d; /* цвет кнопки */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.remove-condition:hover {
+    background-color: #f35726; /* цвет при наведении */
+}
+
+#promo-conditions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1rem;
+}

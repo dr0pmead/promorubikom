@@ -38,51 +38,96 @@ get_header();
         <div class="relative z-20 px-4 md:px-8 lg:px-16 xl:px-8 2xl:px-24 3xl:px-28 pb-24 pt-28 w-full h-full overflow-y-auto gap-6 grid grid-cols-1 xl:grid-cols-2">
    
    <!-- Блок для проверки тикетов -->
-   <div class="w-full bg-[#131313]/50 backdrop-blur-md border-[1px] border-[#fff]/10 rounded-md p-4 md:p-6 flex items-center flex-col overflow-y-auto  min-h-[600px] md:h-full">
+   <div class="w-full bg-[#131313]/50 backdrop-blur-md border-[1px] border-[#fff]/10 rounded-md p-4 md:p-6 flex items-center flex-col overflow-y-hidden  min-h-[600px] md:h-full">
        <div class="w-full flex justify-between items-center flex-col sm:flex-row gap-4">
            <span class="text-xl md:text-2xl font-bold text-white w-full sm:w-auto text-center md:text-left"> Проверка тикетов </span>
-           <button id="delete-all-tickets" class="justify-between py-2 px-6 flex items-center text-white font-bold rounded-md duration-150 bg-[#E50B0B] hover:bg-[#ff4343] gap-2 w-full sm:w-[35%] lg:w-[30%] md:w-[35%]" onclick="event.stopPropagation(); deleteAllTickets(this)"> 
-                <div class="btn-text flex justify-between items-center w-full"><span class="text-sm btn-text">Удалить все тикеты</span>
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/lets-icons_trash-duotone.svg" alt="trash" class="w-6"></div>
-                <span class="btn-spinner hidden animate-spin  h-5 w-5 mx-auto">
-                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z" fill="#fff"/>
-                </svg>
-            </span>
-            </button>
-       </div>
+           <div x-data="{ open: false, selected: 'Все акции', actionID: '' }" class="relative w-full sm:w-[35%] lg:w-[30%] md:w-[35%]">
+                <button @click="open = !open" class="w-full px-4 py-2 bg-[#131313] border-[1px] hover:bg-[#222222] border-[#fff]/10 text-white rounded-md text-left flex justify-between items-center">
+                    <span x-text="selected"></span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                
+                <!-- Выпадающий список -->
+                <div x-show="open" @click.away="open = false" class="absolute z-10 mt-2 w-full bg-[#131313] border-[1px] border-[#fff]/10 rounded-md shadow-lg">
+                    <ul class="text-white">
+                        <li @click="selected = 'Все акции'; actionID = ''; open = false; filterTickets('');" class="cursor-pointer px-4 py-2 hover:bg-[#222222] ">Все акции</li>
+                        <?php
+                            // Получаем все акции
+                            $promoactions_query = new WP_Query(array(
+                                'post_type' => 'promoactions',
+                                'posts_per_page' => -1,
+                                'orderby' => 'date',
+                                'order' => 'ASC',
+                            ));
 
+                            if ($promoactions_query->have_posts()) {
+                                while ($promoactions_query->have_posts()) {
+                                    $promoactions_query->the_post();
+                                    $actionID = basename(get_permalink(get_the_ID())); // Получаем постоянную ссылку
+                                    ?>
+                                    <li @click="selected = '<?php echo esc_attr(get_the_title()); ?>'; actionID = '<?php echo esc_attr($actionID); ?>'; open = false; filterTickets('<?php echo esc_attr($actionID); ?>');" 
+                                        class="cursor-pointer px-4 py-2 hover:bg-[#222222]"><?php echo get_the_title(); ?></li>
+                                    <?php
+                                }
+                                wp_reset_postdata();
+                            }
+                        ?>
+                    </ul>
+                </div>
+
+                <input type="hidden" id="promoaction-filter" x-model="actionID">
+            </div>
+       </div>
+        <div class="w-full flex items-center justify-start gap-4">
+            <span class="text-white font-regular"> Всего тикетов: <span id="total-tickets" class="font-bold text-gray-300">0</span></span>
+            <span class="text-white font-regular"> Количество участников: <span id="participant-count-info" class="font-bold text-gray-300">0</span></span>
+        </div>
+       <div class="h-full w-full items-center justify-center hidden btn-spinner-loader">
+        <div class="dots-container">
+                <span class="dot dot1"></span>
+                <span class="dot dot2"></span>
+                <span class="dot dot3"></span>
+            </div>
+        </div>
        <?php
        $pendingTickets = get_pending_tickets();
        if (empty($pendingTickets)) {
        ?>
-       <div class="nodata flex flex-col justify-center items-center text-center text-white font-bold text-xl w-full h-[400px] lg:h-[700px]">
+       <div id="nodata-ticket" class="nodata flex flex-col justify-center items-center text-center text-white font-bold text-xl w-full h-[400px] lg:h-[700px]">
            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
        </div>
        <?php
        } else {
-           echo '<div class="tickets-grid mt-4 flex flex-col gap-4 w-full">';
+           echo '<div class="tickets-grid mt-4 flex flex-col gap-4 w-full overflow-y-auto">';
            foreach ($pendingTickets as $ticket) {
                $filename = htmlspecialchars($ticket['ticket_number']);
                $uploadDate = isset($ticket['upload_date']) && $ticket['upload_date'] instanceof MongoDB\BSON\UTCDateTime 
                    ? date('d.m.Y H:i', $ticket['upload_date']->toDateTime()->getTimestamp()) 
                    : 'Дата не указана';
-               $path = htmlspecialchars($ticket['path_to']); 
+               $type = isset($ticket['type']) ? $ticket['type'] : 'photo';
+               $path_or_text = isset($ticket['path_or_text']) ? htmlspecialchars($ticket['path_or_text']) : ''; // Получаем path_or_text
                ?>
-               <div class="ticket-item bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full cursor-pointer"
-                   data-image-path="<?php echo $path; ?>" onclick="openImageModal('<?php echo $path; ?>')">
+                <div class="ticket-item bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full cursor-pointer"
+                <?php if ($type !== 'text'): ?> data-image-path="<?php echo $path; ?>" onclick="openImageModal('<?php echo $path_or_text; ?>')"<?php endif; ?>>
                    <div class="flex items-center justify-between gap-4">
                        <div class="flex gap-3">
                            <span>
                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/lets-icons_ticket-duotone.svg" alt="Тикет" class="w-8">
                            </span>
                            <div class="flex flex-col gap-2 justify-start">
-                               <span class="text-lg md:text-xl font-bold leading-3"><?php echo $filename; ?></span>
+                               <span class="text-lg md:text-xl font-bold leading-3">
+                                    <?php echo $filename; ?>
+                                <?php if ($type === 'text'): ?>
+                                    - <?php echo $path_or_text; ?>
+                                <?php endif; ?>
+                               </span>
                                <span class="text-sm text-gray-400 leading-3"><?php echo $uploadDate; ?></span>
                            </div>
                        </div>
                        <div class="flex gap-3 items-center">
-                           <button id="submit-delete" class="delete-ticket-btn flex items-center justify-center px-2 sm:px-6 md:px-8 py-2 duration-150 bg-[#131313] hover:bg-[#222222] border-[1px] border-[#fff]/10 rounded-md"
+                           <button id="submit-delete" class="group delete-ticket-btn flex items-center justify-center px-2 sm:px-6 md:px-8 py-2 duration-150 bg-[#131313] hover:bg-red-500/10 border-[1px] border-[#fff]/10 rounded-md"
                                    data-ticket-id="<?php echo $ticket['_id']; ?>" onclick="event.stopPropagation(); deleteTicket(this)">
                                    <span class="w-5 sm:w-[80px] text-center">
                                <div class="btn-text">
@@ -97,7 +142,7 @@ get_header();
                                </span>
                            </button>
 
-                           <button id="submit-approve" class="approve-ticket-btn flex items-center justify-center px-2 sm:px-6 md:px-8 py-2 duration-150 bg-[#131313] hover:bg-[#222222] border-[1px] border-[#fff]/10 rounded-md"
+                           <button id="submit-approve" class="approve-ticket-btn flex items-center justify-center px-2 sm:px-6 md:px-8 py-2 duration-150 bg-[#131313] hover:bg-green-500/10 border-[1px] border-[#fff]/10 rounded-md"
                                    data-ticket-id="<?php echo $ticket['_id']; ?>" onclick="event.stopPropagation(); approveTicket(this)">
                                <span class="w-5 h-5 sm:w-[80px] text-center flex items-center justify-center sm:h-auto">
                                    <div class="btn-text">
@@ -123,45 +168,100 @@ get_header();
 
    <!-- Блок для розыгрыша по тикетам -->
    <div class="w-full bg-[#131313]/50 backdrop-blur-md border-[1px] border-[#fff]/10 rounded-md p-4 md:p-6 flex items-center flex-col  min-h-[600px] md:h-full h-full overflow-hidden ">
-       <div class="w-full flex justify-between items-center flex-col sm:flex-row gap-4">
-           <span class="text-xl md:text-2xl font-bold text-white w-full sm:w-auto text-center md:text-left"> Розыгрыш по тикетам </span>
-           <button id="open-lottery-modal" class="py-2 px-6 flex items-center text-white font-bold rounded-md duration-150 bg-[#131313] border-[1px] border-[#fff]/10 hover:bg-[#222222] gap-2 w-full justify-between sm:w-[35%] lg:w-[30%] md:w-[35%]">
-                <span class="text-sm">Разыграть</span>
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/bxs_party.svg" alt="party" class="w-6">
-            </button>
+       <div class="w-full flex  items-center flex-col sm:flex-row gap-4">
+           <span class="text-xl md:text-2xl font-bold text-white w-full sm:w-auto text-center md:text-left text-nowrap"> Розыгрыш по тикетам </span>
+           <div class="flex justify-end items-center w-full gap-2" id="promo-value">
+                <!-- Выпадающий список для фильтрации -->
+                <div x-data="{ open: false, selected: 'Все акции', actionID: '' }" class="relative sm:w-[35%] lg:w-[45%] md:w-[35%]">
+                    <button @click="open = !open" class="w-full px-4 py-2 bg-[#131313] border-[1px] hover:bg-[#222222] border-[#fff]/10 text-white rounded-md text-left flex justify-between items-center">
+                        <span x-text="selected"></span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Выпадающий список -->
+                    <div x-show="open" @click.away="open = false" class="absolute z-10 mt-2 w-full bg-[#131313] border-[1px] border-[#fff]/10 rounded-md shadow-lg">
+                        <ul class="text-white">
+                            <li @click="selected = 'Все акции'; actionID = ''; open = false; filterLotteries('');" class="cursor-pointer px-4 py-2 hover:bg-[#222222] ">Все акции</li>
+                            <?php
+                                // Получаем все акции
+                                $promoactions_query = new WP_Query(array(
+                                    'post_type' => 'promoactions',
+                                    'posts_per_page' => -1,
+                                    'orderby' => 'date',
+                                    'order' => 'ASC',
+                                ));
+    
+                                if ($promoactions_query->have_posts()) {
+                                    while ($promoactions_query->have_posts()) {
+                                        $promoactions_query->the_post();
+                                        $actionID = basename(get_permalink(get_the_ID())); // Получаем постоянную ссылку
+                                        ?>
+                                        <li @click="selected = '<?php echo esc_attr(get_the_title()); ?>'; actionID = '<?php echo esc_attr($actionID); ?>'; open = false; filterLotteries('<?php echo esc_attr($actionID); ?>');" 
+                                            class="cursor-pointer px-4 py-2 hover:bg-[#222222]"><?php echo get_the_title(); ?></li>
+                                        <?php
+                                    }
+                                    wp_reset_postdata();
+                                }
+                            ?>
+                        </ul>
+                    </div>
+    
+                    <input type="hidden" id="promoaction-filter" x-model="actionID">
+                </div>
+               <button id="open-lottery-modal" class="w-full py-2 px-6 flex items-center text-white font-bold rounded-md duration-150 bg-[#131313] border-[1px] border-[#fff]/10 hover:bg-[#222222] gap-2 justify-between sm:w-[35%] lg:w-[30%] md:w-[35%]">
+                    <span class="text-sm">Разыграть</span>
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/bxs_party.svg" alt="party" class="w-6">
+                </button>
+            </div>
        </div>
        <?php
-$lotteryRecords = get_lottery_records();
-?>
+            $lotteryRecords = get_lottery_records();
+            ?>
 
 <div x-data="{ openDetails: false }" class="w-full mt-4">
+    <!-- Лоадер на случай загрузки -->
+    <div class="w-full h-full items-center justify-center hidden loading-container-lottery">
+        <div class="dots-container">
+            <span class="dot dot1"></span>
+            <span class="dot dot2"></span>
+            <span class="dot dot3"></span>
+        </div>
+    </div>
+
     <?php if (empty($lotteryRecords)) { ?>
+        <!-- Если нет лотерей, отображаем блок "Нет данных" -->
         <div class="nodata flex flex-col justify-center items-center text-center text-white font-bold text-xl w-full h-[400px] lg:h-[650px]">
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[45%] sm:w-[35%] md:[w-30%] lg:w-[25%] mx-auto">
+            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/no-data.webp" alt="Нет данных" class="w-[45%] sm:w-[35%] md:w-[30%] lg:w-[25%] mx-auto">
         </div>
     <?php } else { ?>
         <div class="relative w-full h-full">
             <!-- Список розыгрышей -->
-            <div class="lottery-records-grid mb-4 flex flex-col gap-4 w-full  h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] overflow-y-auto"
+            <div class="lottery-records-grid mb-4 flex flex-col gap-4 w-full h-[400px] sm:h-[450px] md:h-[500px] lg:h-[550px] xl:h-[650px] overflow-y-auto"
                 x-show="!openDetails" 
                 x-transition:enter="transition transform ease-in-out duration-300"
-                x-transition:enter-start="translate-x-[-100%] opacity-0" x-transition:enter-end="translate-x-0 opacity-1"
+                x-transition:enter-start="translate-x-[-100%] opacity-0" 
+                x-transition:enter-end="translate-x-0 opacity-1"
                 x-transition:leave="transition transform ease-in-out duration-300"
-                x-transition:leave-start="translate-x-0 opacity-1" x-transition:leave-end="translate-x-[-100%] opacity-0">
+                x-transition:leave-start="translate-x-0 opacity-1" 
+                x-transition:leave-end="translate-x-[-100%] opacity-0">
 
                 <?php foreach ($lotteryRecords as $lottery) { ?>
                     <div class="lottery-item bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full cursor-pointer duration-150"
-                         data-id="<?php echo $lottery['_id']; ?>">
+                        data-id="<?php echo $lottery['_id']; ?>">
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col gap-3">
                                 <span class="text-xl font-bold leading-3"><?php echo htmlspecialchars($lottery['numberLottery'] ?? 'Неизвестный номер'); ?></span>
                                 <div class="text-sm text-gray-400">Количество участников: <?php echo intval($lottery['participant_count'] ?? 0); ?></div>
                             </div>
-                            <!-- Передача ID через onclick -->
-                            <button class="p-2 md:py-2 md:px-6  text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222]"
+                            <!-- Кнопка для просмотра деталей -->
+                            <button class="p-2 md:py-2 md:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222]"
                                     @click="openDetails = true" onclick="fetchLotteryDetails('<?php echo $lottery['_id']; ?>')">
                                 <span class="md:flex hidden">Посмотреть детали</span>
-                                <span class="md:hidden flex items-center"><img src="<?php echo get_template_directory_uri(); ?>/assets/images/tabler_list-details.svg" alt="party" class="w-6"></span>
+                                <span class="md:hidden flex items-center">
+                                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/tabler_list-details.svg" alt="party" class="w-6">
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -169,26 +269,33 @@ $lotteryRecords = get_lottery_records();
             </div>
 
             <!-- Детали розыгрыша -->
-            <div class="lottery-details bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full h-[450px] md:h-[500px] lg:h-[550px] absolute top-0 left-0"
+            <div class="lottery-details bg-[#131313] border-[1px] border-white/10 rounded-lg p-4 text-white w-full h-[450px] md:h-[500px] lg:h-[550px] xl:h-[650px] absolute top-0 left-0"
                 x-show="openDetails" 
                 x-transition:enter="transition transform ease-in-out duration-300"
-                x-transition:enter-start="translate-x-[100%] opacity-0" x-transition:enter-end="translate-x-0 opacity-1"
+                x-transition:enter-start="translate-x-[100%] opacity-0" 
+                x-transition:enter-end="translate-x-0 opacity-1"
                 x-transition:leave="transition transform ease-in-out duration-300"
-                x-transition:leave-start="translate-x-0 opacity-1" x-transition:leave-end="translate-x-[100%] opacity-0">
+                x-transition:leave-start="translate-x-0 opacity-1" 
+                x-transition:leave-end="translate-x-[100%] opacity-0">
 
+                <!-- Кнопка "Назад" -->
                 <button class="text-white mb-4 flex items-center justify-center gap-2 font-bold" @click="openDetails = false" id="clickCloseLotteryDetails">
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/maki_arrow.svg" alt="party" class="w-6 rotate-180"> <span class="font-bold"> Назад </span>
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/maki_arrow.svg" alt="party" class="w-6 rotate-180"> 
+                    <span class="font-bold"> Назад </span>
                 </button>
 
-                <!-- Контейнер для отображения данных -->
-                <div id="lottery-details-content">
-                    <div class="w-full flex items-center justify-center h-full">
-                        <span class="btn-spinner hidden animate-spin  h-5 w-5 mx-auto">
-                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z" fill="#fff"/>
-                            </svg>
-                        </span>
+                <!-- Лоадер, пока загружаются детали -->
+                <div class="loading-container-details flex items-center justify-center w-full h-full">
+                    <div class="dots-container">
+                        <span class="dot dot1"></span>
+                        <span class="dot dot2"></span>
+                        <span class="dot dot3"></span>
                     </div>
+                </div>
+
+                <!-- Контейнер для данных лотереи -->
+                <div id="lottery-details-content" class="h-full w-full items-center justify-center">
+                    <!-- Здесь будет загружаться информация о лотерее через JS -->
                 </div>
             </div>
         </div>
@@ -207,14 +314,46 @@ $lotteryRecords = get_lottery_records();
             </div>
         </div>
 
-        <div class="lottery-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc" data-remodal-options="hashTracking: false, closeOnOutsideClick: false"> <!-- Добавляем опцию closeOnOutsideClick: false -->
+        <div class="lottery-modal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto remodal" data-remodal-id="modal-lottery" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc" data-remodal-options="hashTracking: false, closeOnOutsideClick: false"> 
             <h1 id="modal-title" class="text-2xl font-bold text-white mb-6">Введите количество участников</h1>
             <div id="error-lottery" class="text-red-500 text-sm mb-4 hidden"></div>
 
-            <!-- Поле ввода количества участников
-            <select type="select" id="lottery-action" class="w-full px-4 py-2 text-gray-300 bg-[#222222] border-[1px] border-[#fff]/10 rounded-md text-center" placeholder="Название акции">
-                    
-            </select>    -->
+            <div id="lottery-filter-modal" class="relative inline-block w-full text-left mb-6" x-data="{ open: false, selected: 'Выберите акцию', actionID: '' }">
+                <button @click="open = !open" class="w-full px-4 py-3 bg-[#131313] border-[1px] border-[#fff]/10 rounded-md font-bold text-gray-300 flex items-center justify-between">
+                    <span x-text="selected"></span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" class="absolute z-10 mt-2 w-full bg-[#131313] border-[1px] border-[#fff]/10 rounded-md shadow-lg">
+                    <ul class="text-white">
+                        <li @click="selected = 'Все акции'; actionID = ''; open = false;" class="cursor-pointer px-4 py-2 hover:bg-[#222222] font-bold text-gray-300 ">Все акции</li>
+                        <?php
+                            // Get all promoactions
+                            $promoactions_query = new WP_Query(array(
+                                'post_type' => 'promoactions',
+                                'posts_per_page' => -1,
+                                'orderby' => 'date',
+                                'order' => 'ASC',
+                            ));
+
+                            if ($promoactions_query->have_posts()) {
+                                while ($promoactions_query->have_posts()) {
+                                    $promoactions_query->the_post();
+                                    $actionID = basename(get_permalink(get_the_ID())); // Get permalink
+                                    ?>
+                                    <li @click="selected = '<?php echo esc_attr(get_the_title()); ?>'; actionID = '<?php echo esc_attr($actionID); ?>'; open = false;" 
+                                        class="cursor-pointer px-4 py-2 hover:bg-[#222222] font-bold text-gray-300"><?php echo get_the_title(); ?></li>
+                                    <?php
+                                }
+                                wp_reset_postdata();
+                            }
+                        ?>
+                    </ul>
+                </div>
+                <!-- Hidden input field to store the selected action ID -->
+                <input type="hidden" id="promoaction-filter-lottery" x-model="actionID">
+            </div>
 
             <input type="text" id="lottery-name" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Название розыгрыша">
             <input type="number" id="participant-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" placeholder="Количество участников (0-1000)" min="0" max="1000">
@@ -248,7 +387,12 @@ $lotteryRecords = get_lottery_records();
         </div>
 
     <script>
+
 jQuery(document).ready(function($) {
+        $(document).ready(function () {
+            const actionID = $('#promoaction-filter').val();
+            updateTicketStats(actionID);
+        });
 
         // Функция для открытия модального окна с изображением
         function openImageModal(imagePath) {
@@ -281,42 +425,45 @@ jQuery(document).ready(function($) {
         });
 
 
-        // Логика розыгрыша при нажатии на кнопку "Разыграть"
         $('#start-lottery').on('click', function() {
             var participantCount = $('#participant-count').val();
             var lotteryName = $('#lottery-name').val();
+            var actionID = $('#promoaction-filter-lottery').val(); // Get action ID from the hidden input
+
             if (participantCount < 1 || participantCount > 1000) {
                 $('#error-lottery').text('Пожалуйста, введите корректное количество участников').show();
                 return;
             }
 
-            // Скрываем поле ввода, кнопку и заголовок, показываем анимацию
+            // Hide inputs and show spinner
             $('#lottery-name').hide();
             $('#participant-count').hide();
             $('#start-lottery').hide();
-            $('#modal-title').hide(); // Скрываем заголовок
-            $('#lottery-results-container').show(); // Показываем контейнер для анимации
+            $('#modal-title').hide();
+            $('#lottery-results-container').show(); // Show animation container
+            $('#lottery-filter-modal').hide();
 
-            // Показываем анимацию выбора победителей
+            // Show loading spinner for the selection process
             $('#spinner-animation').show();
             $('#winner-tickets').hide();
 
-            // Запускаем лотерею
+            // AJAX request to start the lottery
             $.ajax({
                 url: ajax_object.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'start_lottery',
                     participant_count: participantCount,
-                    lottery_name: lotteryName
+                    lottery_name: lotteryName,
+                    promoaction: actionID // Pass selected action ID
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Скрываем анимацию и запрашиваем последнюю лотерею
+                        // Hide spinner and fetch the latest lottery details
                         setTimeout(function() {
-                            $('#spinner-animation').hide(); // Скрываем анимацию
-                            fetchLatestLotteryDetails(); // После успешного розыгрыша запрашиваем последнюю лотерею
-                        }, 3000); // Задержка в 3 секунды
+                            $('#spinner-animation').hide();
+                            fetchLatestLotteryDetails(); // Fetch the latest lottery details
+                        }, 3000); // 3-second delay
                     } else {
                         $('#error-lottery').text('Ошибка: ' + response.data.message).show();
                     }
@@ -396,50 +543,13 @@ jQuery(document).ready(function($) {
             $('#winner-tickets').hide(); // Скрываем победителей
             $('#error-lottery').hide(); // Скрываем сообщение об ошибке
             $('#close-lottery').hide(); // Скрываем кнопку закрытия
+            $('#lottery-filter-modal').show();
         });
-
-        // Функция для удаления тикета
-        function deleteTicket(button) {
-            const ticketId = $(button).data('ticket-id');
-
-            // Добавляем классы для отображения спиннера
-            $(button).find('.btn-text').addClass('hidden');
-            $(button).find('.btn-spinner').removeClass('hidden');
-            $(button).find('.btn-spinner').addClass('block');
-
-            if (confirm('Вы уверены, что хотите удалить этот тикет?')) {
-                $.ajax({
-                    url: ajax_object.ajax_url,
-                    type: 'POST',
-                    data: {
-                        action: 'delete_ticket',
-                        ticket_id: ticketId // Передаем ID тикета
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload(); // Обновляем страницу
-                        } else {
-                            alert('Ошибка: ' + response.data.message);
-                        }
-                    },
-                    complete: function() {
-                        // Восстановление текста кнопки после завершения операции
-                        $(button).find('.btn-text').removeClass('hidden');
-                        $(button).find('.btn-spinner').addClass('hidden');
-                        $(button).find('.btn-spinner').removeClass('block');
-                    }
-                });
-            } else {
-                // Восстанавливаем текст кнопки, если отменили операцию
-                $(button).find('.btn-text').removeClass('hidden');
-                $(button).find('.btn-spinner').addClass('hidden');
-                $(button).find('.btn-spinner').removeClass('block');
-            }
-        }
 
         // Принятие тикета
         function approveTicket(button) {
             const ticketId = $(button).data('ticket-id');
+            const actionID = $('#promoaction-filter').val(); // Получаем текущую акцию
 
             $(button).find('.btn-text').addClass('hidden');
             $(button).find('.btn-spinner').removeClass('hidden');
@@ -455,13 +565,13 @@ jQuery(document).ready(function($) {
                     },
                     success: function(response) {
                         if (response.success) {
-                            location.reload(); // Обновляем страницу после успешного одобрения
+                            $(button).closest('.ticket-item').remove(); // Удаляем тикет из списка
+                            updateTicketStats(actionID); // Обновляем статистику
                         } else {
                             alert('Ошибка: ' + response.data.message);
                         }
                     },
                     complete: function() {
-                        // Возвращаем кнопку в исходное состояние после завершения операции
                         $(button).find('.btn-text').removeClass('hidden');
                         $(button).find('.btn-spinner').addClass('hidden');
                         $(button).find('.btn-spinner').removeClass('block');
@@ -470,28 +580,30 @@ jQuery(document).ready(function($) {
             }
         }
 
-        // Удаление всех тикетов
-        function deleteAllTickets(button) {
+        // Удаление тикета
+        function deleteTicket(button) {
+            const ticketId = $(button).data('ticket-id');
+            const actionID = $('#promoaction-filter').val(); // Получаем текущую акцию
+
             $(button).find('.btn-text').addClass('hidden');
             $(button).find('.btn-spinner').removeClass('hidden');
             $(button).find('.btn-spinner').addClass('block');
 
-            if (confirm('Вы уверены, что хотите удалить все тикеты?')) {
+            if (confirm('Вы уверены, что хотите удалить этот тикет?')) {
                 $.ajax({
                     url: ajax_object.ajax_url,
                     type: 'POST',
                     data: {
-                        action: 'delete_all_tickets', // Указываем действие для удаления всех тикетов
+                        action: 'delete_ticket',
+                        ticket_id: ticketId
                     },
                     success: function(response) {
                         if (response.success) {
-                            location.reload(); // Обновляем страницу после успешного удаления всех тикетов
+                            $(button).closest('.ticket-item').remove(); // Удаляем тикет из списка
+                            updateTicketStats(actionID); // Обновляем статистику
                         } else {
                             alert('Ошибка: ' + response.data.message);
                         }
-                    },
-                    error: function() {
-                        alert('Произошла ошибка при попытке удаления всех тикетов.');
                     },
                     complete: function() {
                         $(button).find('.btn-text').removeClass('hidden');
@@ -499,24 +611,91 @@ jQuery(document).ready(function($) {
                         $(button).find('.btn-spinner').removeClass('block');
                     }
                 });
-            } else {
-                $(button).find('.btn-text').removeClass('hidden');
-                $(button).find('.btn-spinner').addClass('hidden');
-                $(button).find('.btn-spinner').removeClass('block');
             }
+        }
+
+        function filterTickets(actionID) {
+            // Показать спиннер перед загрузкой
+            $('.btn-spinner-loader').removeClass('hidden');
+            $('.btn-spinner-loader').addClass('flex');
+            $('#nodata-ticket').addClass('hidden');
+            $('.tickets-grid').hide();
+
+            $.ajax({
+                url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                type: 'POST',
+                data: {
+                    action: 'filter_tickets_by_promoaction',
+                    promoaction: actionID
+                },
+                success: function(response) {
+                    // Скрываем спиннер после успешной загрузки данных
+                    $('.btn-spinner-loader').addClass('hidden');
+                    $('.btn-spinner-loader').removeClass('flex');
+                    $('#nodata-ticket').removeClass('hidden');
+                    $('.tickets-grid').show();
+                    // Обновляем контейнер с тикетами
+                    $('.tickets-grid').html(response);
+                    updateTicketStats(actionID);
+                },
+                error: function() {
+                    // Скрываем спиннер, если произошла ошибка
+                    $('.btn-spinner').addClass('hidden');
+                    alert('Ошибка при фильтрации тикетов');
+                }
+            });
+        }
+
+        // Функция для обновления статистики тикетов
+        function updateTicketStats(actionID) {
+            // Запрос для обновления количества тикетов
+            $.ajax({
+                url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                type: 'POST',
+                data: {
+                    action: 'get_ticket_stats',
+                    promoaction: actionID
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#total-tickets').text(response.data.total_tickets);
+                        $('#participant-count-info').text(response.data.participant_count);
+                    } else {
+                        console.log('Ошибка обновления статистики тикетов');
+                    }
+                },
+                error: function() {
+                    console.log('Ошибка запроса обновления статистики');
+                }
+            });
+        }
+
+        function filterLotteries(actionID) {
+            $('.loading-container-lottery').removeClass('hidden')
+            $('.loading-container-lottery').addClass('flex')
+            $.ajax({
+                url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                type: 'POST',
+                data: {
+                    action: 'filter_lotteries_by_promoaction',
+                    promoaction: actionID
+                },
+                success: function(response) {
+                    // Обновляем контейнер с лотереями
+                    $('.loading-container-lottery').removeClass('flex')
+                    $('.loading-container-lottery').addClass('hidden')
+                    $('.lottery-records-grid').html(response);
+                },
+                error: function() {
+                    alert('Ошибка при фильтрации лотерей');
+                }
+            });
         }
 
         function fetchLotteryDetails(lotteryId) {
                 // Показываем спиннер перед началом загрузки
-                $('#lottery-details-content').html(`
-                    <div class="w-full flex items-center justify-center h-full">
-                        <span class="btn-spinner animate-spin h-5 w-5 mx-auto">
-                            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.501 8C2.501 6.91221 2.82357 5.84884 3.42792 4.94437C4.03227 4.0399 4.89125 3.33495 5.89624 2.91867C6.90123 2.50238 8.0071 2.39347 9.074 2.60568C10.1409 2.8179 11.1209 3.34173 11.8901 4.11092C12.6593 4.8801 13.1831 5.86011 13.3953 6.92701C13.6075 7.9939 13.4986 9.09977 13.0823 10.1048C12.6661 11.1098 11.9611 11.9687 11.0566 12.5731C10.1522 13.1774 9.0888 13.5 8.001 13.5C7.80209 13.4999 7.61127 13.5788 7.47052 13.7193C7.32978 13.8599 7.25063 14.0506 7.2505 14.2495C7.25037 14.4484 7.32926 14.6392 7.46982 14.78C7.61037 14.9207 7.80109 14.9999 8 15C9.38447 15 10.7378 14.5895 11.889 13.8203C13.0401 13.0511 13.9373 11.9579 14.4672 10.6788C14.997 9.3997 15.1356 7.99224 14.8655 6.63437C14.5954 5.2765 13.9287 4.02922 12.9497 3.05026C11.9708 2.07129 10.7235 1.4046 9.36563 1.13451C8.00777 0.86441 6.6003 1.00303 5.32122 1.53285C4.04213 2.06266 2.94888 2.95987 2.17971 4.11101C1.41054 5.26216 1 6.61553 1 8C1 8.19905 1.07907 8.38994 1.21982 8.53069C1.36056 8.67143 1.55145 8.7505 1.7505 8.7505C1.94954 8.7505 2.14044 8.67143 2.28118 8.53069C2.42193 8.38994 2.501 8.19905 2.501 8Z" fill="#fff"/>
-                            </svg>
-                        </span>
-                    </div>
-                `);
+                $('.loading-container-details').removeClass('hidden')
+                $('.loading-container-details').addClass('flex')
 
                 $.ajax({
                     url: '<?php echo admin_url("admin-ajax.php"); ?>',
@@ -528,12 +707,14 @@ jQuery(document).ready(function($) {
                     success: function(response) {
                         if (response.success) {
                             const lotteryDetails = response.data.data;
-
+                            
                             // HTML для информации о лотерее
                             let detailsHtml = `
                                 <div id="lottery-info">
                                     <p><strong>Номер розыгрыша:</strong> ${lotteryDetails.numberLottery || 'Неизвестный номер'}</p>
                                     <p><strong>Количество участников:</strong> ${lotteryDetails.participant_count || 'Неизвестно'}</p>
+                                    <p><strong>Дата проведения:</strong> ${lotteryDetails.date || 'Дата неизвестна'}</p>
+                                    <p><strong>Акция:</strong> ${lotteryDetails.promoaction || 'Акция не найдена'}</p>
                                 </div>`;
 
                             // HTML для победных тикетов
@@ -550,12 +731,18 @@ jQuery(document).ready(function($) {
                                                 </div>
                                                 <span class="text-md text-white"> ${ticket.owner.phone} </span>
                                             </div>
-                                            <div>
-                                                <button onclick="openImageModal('${ticket.path}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
-                                                    <span class="hidden sm:block">Показать чек</span>
-                                                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
-                                                </button>
-                                            </div>
+                                            <div>`;
+
+                                    // Проверяем тип тикета
+                                    if (ticket.type !== 'text') {
+                                        detailsHtml += `
+                                            <button onclick="openImageModal('${ticket.path_or_text}')" class="show-receipt-btn p-2 sm:py-2 sm:px-6 text-white font-bold rounded-md bg-[#131313] border-[1px] border-white/10 hover:bg-[#222222] flex items-center justify-center">
+                                                <span class="hidden sm:block">Показать чек</span>
+                                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/ion_open.svg" alt="icon" class="w-6 sm:hidden">
+                                            </button>`;
+                                    }
+
+                                    detailsHtml += `</div>
                                         </div>`;
                                 });
                             } else {
@@ -565,6 +752,8 @@ jQuery(document).ready(function($) {
                             detailsHtml += `</div>`;
 
                             // Вставляем сформированный HTML в контейнер
+                            $('.loading-container-details').removeClass('flex')
+                            $('.loading-container-details').addClass('hidden')
                             $('#lottery-details-content').html(detailsHtml);
                         } else {
                             alert('Ошибка: ' + response.data.message);
@@ -590,13 +779,13 @@ jQuery(document).ready(function($) {
 
                 // Дополнительно можно сбросить другие переменные или состояние
             });
- 
-            // Привязка функций к окнам и кнопкам
+         
         window.deleteTicket = deleteTicket;
         window.approveTicket = approveTicket;
         window.openImageModal = openImageModal;
-        window.deleteAllTickets = deleteAllTickets;
         window.fetchLotteryDetails = fetchLotteryDetails;
+        window.filterTickets = filterTickets;
+        window.filterLotteries = filterLotteries;
 
         });
 

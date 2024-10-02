@@ -45,6 +45,11 @@ function restrict_dashboard_access() {
 }
 add_action('template_redirect', 'restrict_dashboard_access');
 
+function my_admin_style() {
+    wp_enqueue_style('admin-styles', get_stylesheet_directory_uri().'/assets/css/admin.css');
+  }
+add_action('admin_enqueue_scripts', 'my_admin_style');
+
 function filter_dashboard_menu_item($items, $args) {
     // Проверяем, есть ли куки 'user_id' (авторизован ли пользователь)
     if (!isset($_COOKIE['user_id'])) {
