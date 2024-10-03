@@ -25,7 +25,8 @@ function get_user_data() {
             echo json_encode([
                 'success' => true,
                 'data' => [
-                    'fio' => $user['fio'],
+                    'name' => $user['name'],
+                    'firstname' => $user['firstname'],
                     'phone' => $user['phone'],
                     'age' => $user['age'],
                     'region' => $user['region'],
@@ -247,7 +248,8 @@ function approve_ticket() {
                 'ticket_id' => (string)$ticket['_id'],
                 'ticket_number' => $ticket['ticket_number'],
                 'phone' => $ticket['phone'],
-                'fio' => $ticket['fio'],
+                'name' => $ticket['name'],
+                'firstname' => $ticket['firstname'],
                 'region' => $ticket['region'],
                 'age' => $ticket['age'],
                 'gender' => $ticket['gender'],
@@ -360,11 +362,12 @@ function start_lottery() {
         // Формируем массив данных победителей
         $formattedWinningTickets[] = [
             'ticket_id' => (string) $ticket['_id'],
-            'file_name' => $ticket['file_name'],
+            'file_name' => $ticket['ticket_number'],
             'path_or_text' => $ticket['path_or_text'],
             'type' => $ticket['type'],
             'owner' => [
-                'fio' => $ticket['fio'],
+                'name' => $ticket['name'],
+                'firstname' => $ticket['firstname'],
                 'phone' => $ticket['phone'],
                 'region' => $ticket['region']
             ]
@@ -460,11 +463,12 @@ function get_lottery_details() {
             foreach ($lottery['winning_tickets'] as $ticket) {
                 $formattedWinningTickets[] = [
                     'ticket_id' => $ticket['ticket_id'], // ticket_id теперь строка
-                    'file_name' => $ticket['ticket_number'], // Используем ticket_number вместо file_name
+                    'ticket_number' => $ticket['ticket_number'], // Используем ticket_number вместо file_name
                     'path_or_text' => htmlspecialchars($ticket['path_or_text']),
                     'type' => $ticket['type'],
                     'owner' => [
-                        'fio' => htmlspecialchars($ticket['owner']['fio']),
+                        'name' => htmlspecialchars($ticket['owner']['name']),
+                        'firstname' => htmlspecialchars($ticket['owner']['firstname']),
                         'phone' => htmlspecialchars($ticket['owner']['phone']),
                         'region' => htmlspecialchars($ticket['owner']['region'])
                     ]
@@ -509,7 +513,7 @@ function get_latest_lottery_details() {
                     'ticket_id' => (string) $ticket['ticket_id'],
                     'path' => $ticket['path'],
                     'owner' => [
-                        'fio' => $ticket['owner']['fio'],
+                        'name' => $ticket['owner']['name'],
                         'phone' => $ticket['owner']['phone'],
                         'region' => $ticket['owner']['region']
                     ]
@@ -623,4 +627,34 @@ function filter_lotteries_by_promoaction() {
     }
 
     wp_die(); // Останавливаем выполнение PHP скрипта
+}
+
+add_action('wp_ajax_delete_tickets_by_promoaction', 'delete_tickets_by_promoaction');
+
+function delete_tickets_by_promoaction() {
+    if (!isset($_POST['promoaction'])) {
+        wp_send_json_error(['message' => 'Не указана акция для удаления']);
+        return;
+    }
+
+    $promoaction = sanitize_text_field($_POST['promoaction']);
+
+    // Подключаемся к MongoDB
+    $db = get_mongo_connection();
+    $ticketsCollection = $db->tickets;
+
+    try {
+        // Удаляем все тикеты, где promoaction равно значению из инпута
+        $deleteResult = $ticketsCollection->deleteMany(['promoaction' => $promoaction]);
+
+        // Проверяем, сколько документов было удалено
+        $deletedCount = $deleteResult->getDeletedCount();
+        if ($deletedCount > 0) {
+            wp_send_json_success(['message' => 'Удалено ' . $deletedCount . ' тикетов']);
+        } else {
+            wp_send_json_error(['message' => 'Не найдено тикетов для данной акции']);
+        }
+    } catch (Exception $e) {
+        wp_send_json_error(['message' => 'Ошибка при удалении тикетов: ' . $e->getMessage()]);
+    }
 }

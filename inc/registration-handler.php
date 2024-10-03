@@ -3,9 +3,10 @@ require_once 'mongodb-handler.php'; // Подключение к MongoDB
 
 function handle_ticket_registration() {
     // Проверяем наличие всех обязательных полей
-    if (isset($_POST['phone'], $_POST['fio'], $_POST['region'], $_POST['age'], $_POST['gender'], $_POST['promoaction'])) {
+    if (isset($_POST['phone'], $_POST['name'], $_POST['firstname'], $_POST['region'], $_POST['age'], $_POST['gender'], $_POST['promoaction'])) {
         $phone = sanitize_text_field($_POST['phone']);
-        $fio = sanitize_text_field($_POST['fio']);
+        $name = sanitize_text_field($_POST['name']);
+        $firstname = sanitize_text_field($_POST['firstname']);
         $region = sanitize_text_field($_POST['region']);
         $age = sanitize_text_field($_POST['age']);
         $gender = sanitize_text_field($_POST['gender']);
@@ -29,7 +30,7 @@ function handle_ticket_registration() {
                 $path_to = '/wp-content/uploads/receipts/' . $file_name;
 
                 // Сохраняем данные с путём до изображения
-                $saved = save_ticket_to_mongo($phone, $fio, $region, $age, $gender, $path_to, 'photo', $promoaction);
+                $saved = save_ticket_to_mongo($phone, $name, $firstname, $region, $age, $gender, $path_to, 'photo', $promoaction);
                 if ($saved) {
                     wp_send_json_success(array('message' => 'Чек успешно зарегистрирован.'));
                 } else {
@@ -43,7 +44,7 @@ function handle_ticket_registration() {
             $custom_text = sanitize_text_field($_POST['condition_text']);
 
             // Сохраняем текст в MongoDB
-            $saved = save_ticket_to_mongo($phone, $fio, $region, $age, $gender, $custom_text, 'text', $promoaction);
+            $saved = save_ticket_to_mongo($phone, $name, $firstname, $region, $age, $gender, $custom_text, 'text', $promoaction);
             if ($saved) {
                 wp_send_json_success(array('message' => 'Участие успешно зарегистрировано.'));
             } else {
@@ -57,7 +58,7 @@ function handle_ticket_registration() {
     }
 }
 
-function save_ticket_to_mongo($phone, $fio, $region, $age, $gender, $path_or_text, $type, $promoaction) {
+function save_ticket_to_mongo($phone, $name, $firstname, $region, $age, $gender, $path_or_text, $type, $promoaction) {
     $db = get_mongo_connection();
     $collection = $db->tickets;
 
@@ -74,7 +75,8 @@ function save_ticket_to_mongo($phone, $fio, $region, $age, $gender, $path_or_tex
     $ticket_data = [
         'ticket_number' => $ticket,
         'phone' => $phone,
-        'fio' => $fio,
+        'name' => $name,
+        'firstname' => $firstname,
         'region' => $region,
         'age' => $age,
         'gender' => $gender,

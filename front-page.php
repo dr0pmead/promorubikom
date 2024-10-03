@@ -92,7 +92,11 @@ get_header();
                                 </div>
 
                                 <div class="mb-4">
-                                    <input type="text" name="fio" placeholder="Ваше имя" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>
+                                    <input type="text" name="name" placeholder="Ваше имя" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <input type="text" name="firstname" placeholder="Ваша фамилия" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required>
                                 </div>
 
                                 <div class="mb-4">
