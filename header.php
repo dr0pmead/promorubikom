@@ -99,7 +99,7 @@
         <form id="login-form">
             <!-- Поле для ввода телефона -->
             <div class="mb-6">
-                <input type="tel" name="phone" placeholder="+7 777 777 77 77" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
+                <input type="name" name="name" placeholder="Имя пользователя" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600">
             </div>
 
             <!-- Поле для ввода пароля -->
@@ -268,10 +268,10 @@ jQuery(document).ready(function($) {
         var csrfToken = $('input[name="csrf_token"]').val(); // Получаем CSRF токен
 
         // Проверка на пустые поля
-        var phone = $('input[name="phone"]').val();
+        var name = $('input[name="name"]').val();
         var password = $('input[name="password"]').val();
         
-        if (!phone || !password) {
+        if (!name || !password) {
             $('#login-error').text('Пожалуйста, заполните все поля.').fadeIn();
             return;
         }

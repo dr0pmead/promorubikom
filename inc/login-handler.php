@@ -12,11 +12,11 @@ function handle_login_request() {
     }
 
     // Получаем данные из POST
-    $phone = isset($_POST['phone']) ? trim($_POST['phone']) : null;
+    $name = isset($_POST['name']) ? trim($_POST['name']) : null;
     $password = isset($_POST['password']) ? trim($_POST['password']) : null;
 
     // Валидация ввода
-    if (!$phone || !$password) {
+    if (!$name || !$password) {
         return respond_with_error('Необходимо ввести телефон и пароль');
     }
 
@@ -36,7 +36,7 @@ function handle_login_request() {
     }
 
     // Проверяем пользователя по номеру телефона
-    $user = find_user_by_phone($phone);
+    $user = find_user_by_phone($name);
     if (!$user) {
         log_failed_attempt($ip_address); // Логируем неудачную попытку
         return respond_with_error('Пользователь не найден');
@@ -83,17 +83,17 @@ function set_cookie($name, $value, $days = 30) {
 }
 
 // Функция поиска пользователя по номеру телефона
-function find_user_by_phone($phone) {
+function find_user_by_phone($name) {
     $db = get_mongo_connection(); // Получаем соединение с базой данных
     $collection = $db->users; // Используем коллекцию 'users', замените на нужную вам
-    return $collection->findOne(['phone' => $phone]);
+    return $collection->findOne(['name' => $name]);
 }
 
 // Функция генерации JWT токена
 function generate_jwt_for_user($user) {
     $key = "xyezOaQakHqIBYCTtyiOrkkpfHYJKU"; // Секретный ключ для токена
     $payload = [
-        'iss' => "http://promo.rubikom.kz", // Издатель токена
+        'iss' => "https://promo.rubikom.kz", // Издатель токена
         'iat' => time(), // Время создания токена
         'exp' => time() + (30 * 24 * 60 * 60), // Срок действия - 30 дней
         'user_id' => (string) $user['_id'], // ID пользователя

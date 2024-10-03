@@ -17,7 +17,7 @@ function get_user_button_html() {
                 ?>
                 <div x-data="{ open: false }" class="xl:flex items-center gap-3 hidden w-full ml-2 relative">
                     <div @click="open = !open" class="flex items-center py-1.5 px-3 text-nowrap bg-[#131313] text-white rounded-lg duration-150 border-[1px] hover:bg-[#222222] border-[#fff]/10 gap-3 cursor-pointer leading-[5px]">
-                        <span class="font-bold text-sm"><?php echo $user['phone']; ?></span>
+                        <span class="font-bold text-sm"><?php echo $user['name']; ?></span>
                         <span class="w-3 object-contain">    
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/down_arrow.svg" alt="Logout Icon">
                         </span> 
