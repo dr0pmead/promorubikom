@@ -372,5 +372,3 @@ $(document).on('closing', '.remodal', function (e) {
     document.getElementById('randomizer-result').classList.add('hidden'); // Скрыть результат
 });
     </script>
-
-    <!-- тест -->
