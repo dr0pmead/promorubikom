@@ -36,7 +36,7 @@
         <nav class="hidden xl:flex flex-1 mx-8">
             <?php
             wp_nav_menu( array(
-                'theme_location' => 'header-menu',
+                'theme_location' => 'primary',
                 'container'      => 'ul',
                 'menu_class'     => 'flex text-lg sm:gap-3 md:gap-4 xl:gap-6 lg:text-md duration-150',
                 'walker'         => new Custom_Walker_Nav_Menu(), 
