@@ -244,6 +244,25 @@ endif;
 
 </main>
 
+<!-- Модальное окно для рандомайзера -->
+<div class="remodal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto" data-remodal-id="modal-randomizer" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc" data-remodal-options="hashTracking: false, closeOnOutsideClick: false">
+    <h1 id="modalTitle" class="text-2xl font-bold text-white mb-6">Рандомайзер</h1>
+
+    <!-- Поле для ввода количества участников -->
+    <input type="number" id="randomizer-participant-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Количество участников" min="1">
+
+    <!-- Поле для ввода количества победителей -->
+    <input type="number" id="randomizer-winner-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Количество победителей" min="1">
+
+    <!-- Кнопка "Разыграть" -->
+    <button id="start-randomizer" class="bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold">
+        Разыграть
+    </button>
+
+    <!-- Контейнер для отображения победителей, скрыт по умолчанию -->
+    <div id="randomizer-result" class="text-white mt-6 hidden"></div>
+</div>
+
 <script>
     jQuery(document).ready(function($) {
         // Определяем поле на основе условий
@@ -319,3 +338,37 @@ jQuery(document).ready(function ($) {
     });
 });
 </script>
+
+<script>
+document.getElementById('start-randomizer').addEventListener('click', function() {
+    const participantCount = parseInt(document.getElementById('randomizer-participant-count').value);
+    const winnerCount = parseInt(document.getElementById('randomizer-winner-count').value);
+
+    // Проверка на корректное количество участников и победителей
+    if (isNaN(participantCount) || isNaN(winnerCount) || participantCount < 1 || winnerCount < 1 || winnerCount > participantCount) {
+        alert('Введите корректные значения для участников и победителей.');
+        return;
+    }
+
+    // Генерация случайных победителей
+    const participants = Array.from({ length: participantCount }, (_, i) => i + 1); // Массив от 1 до количества участников
+    const winners = [];
+
+    while (winners.length < winnerCount) {
+        const randomIndex = Math.floor(Math.random() * participants.length);
+        winners.push(participants.splice(randomIndex, 1)[0]); // Удаляем выбранного участника из списка
+    }
+
+    // Отображение результата
+    const resultContainer = document.getElementById('randomizer-result');
+    resultContainer.innerHTML = `<p><strong>Победители:</strong> ${winners.join(', ')}</p>`;
+    resultContainer.classList.remove('hidden'); // Показать контейнер с результатом
+});
+
+// Сброс формы и скрытие контейнера при закрытии модального окна
+$(document).on('closing', '.remodal', function (e) {
+    document.getElementById('randomizer-participant-count').value = '';
+    document.getElementById('randomizer-winner-count').value = '';
+    document.getElementById('randomizer-result').classList.add('hidden'); // Скрыть результат
+});
+    </script>

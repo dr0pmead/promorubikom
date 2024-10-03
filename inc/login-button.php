@@ -50,6 +50,10 @@ function get_user_button_html() {
                         </a>
                         <?php endif; ?>
 
+                        <button class="flex w-full px-4 py-2 text-sm text-white hover:bg-[#fff]/10 rounded-b-lg items-center gap-3" data-remodal-target="modal-randomizer">
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/mingcute_random-fill.svg" alt="password Icon" class="w-6">Рандомайзер
+                        </button>
+
                         <button  class="flex w-full px-4 py-2 text-sm text-white hover:bg-[#fff]/10 rounded-b-lg items-center gap-3 " data-remodal-target="modal-change-password">
                             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/fluent_password-48-regular.svg" alt="password Icon" class="w-6">Смена пароля
                         </button>
