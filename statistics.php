@@ -289,5 +289,42 @@ document.getElementById('export-data').addEventListener('click', function () {
     window.location.href = ajax_object.ajax_url + '?action=export_to_excel';
 });
         </script>
+        <script>
+jQuery(document).ready(function ($) {
+    // Обработчик для кнопки "Разыграть"
+    $('#start-randomizer').on('click', function () {
+        const participantCount = parseInt($('#randomizer-participant-count').val());
+        const winnerCount = parseInt($('#randomizer-winner-count').val());
+
+        // Проверка корректных значений
+        if (isNaN(participantCount) || isNaN(winnerCount) || participantCount < 1 || winnerCount < 1 || winnerCount > participantCount) {
+            alert('Введите корректные значения для участников и победителей.');
+            return;
+        }
+
+        // Генерация случайных победителей
+        const participants = Array.from({ length: participantCount }, (_, i) => i + 1);
+        const winners = [];
+
+        while (winners.length < winnerCount) {
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            winners.push(participants.splice(randomIndex, 1)[0]);
+        }
+
+        // Отображение результатов
+        const resultContainer = $('#randomizer-result');
+        resultContainer.html(`<p><strong>Победители:</strong> ${winners.join(', ')}</p>`);
+        resultContainer.removeClass('hidden');
+    });
+
+    // Сброс формы и скрытие результатов при закрытии модального окна
+    $(document).on('closing', '.remodal', function () {
+        $('#randomizer-participant-count').val('');
+        $('#randomizer-winner-count').val('');
+        $('#randomizer-result').addClass('hidden'); // Скрыть результат
+    });
+});
+
+            </script>
 </main>
 

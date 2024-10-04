@@ -4,7 +4,7 @@
 function get_mongo_connection() {
     try {
         // Подключаемся к MongoDB через клиент
-        $client = new MongoDB\Client("mongodb+srv://admin:nOHsNvhtCRTI82C4@psu-database.cny26np.mongodb.net/promoRubikom?retryWrites=true&w=majority");
+        $client = new MongoDB\Client("mongodb://localhost:27017/promoRubikom?retryWrites=true&w=majority");
         return $client->promoRubikom; // Замените 'your_database_name' на вашу базу данных
     } catch (MongoDB\Exception\Exception $e) {
         error_log('Ошибка подключения к MongoDB: ' . $e->getMessage());

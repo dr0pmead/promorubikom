@@ -121,7 +121,7 @@ get_header();
                                 </div>
 
                                 <div class="mb-4">
-                                    <input type="number" name="age" placeholder="Ваш возраст" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required min="1" max="100">
+                                    <input type="number" name="age" min="18" max="100"  pattern="\d*" placeholder="Ваш возраст" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600" required min="1" max="100">
                                 </div>
 
                                 <div class="flex items-center mb-6 justify-start space-x-4">
@@ -340,35 +340,39 @@ jQuery(document).ready(function ($) {
 </script>
 
 <script>
-document.getElementById('start-randomizer').addEventListener('click', function() {
-    const participantCount = parseInt(document.getElementById('randomizer-participant-count').value);
-    const winnerCount = parseInt(document.getElementById('randomizer-winner-count').value);
+jQuery(document).ready(function ($) {
+    // Обработчик для кнопки "Разыграть"
+    $('#start-randomizer').on('click', function () {
+        const participantCount = parseInt($('#randomizer-participant-count').val());
+        const winnerCount = parseInt($('#randomizer-winner-count').val());
 
-    // Проверка на корректное количество участников и победителей
-    if (isNaN(participantCount) || isNaN(winnerCount) || participantCount < 1 || winnerCount < 1 || winnerCount > participantCount) {
-        alert('Введите корректные значения для участников и победителей.');
-        return;
-    }
+        // Проверка корректных значений
+        if (isNaN(participantCount) || isNaN(winnerCount) || participantCount < 1 || winnerCount < 1 || winnerCount > participantCount) {
+            alert('Введите корректные значения для участников и победителей.');
+            return;
+        }
 
-    // Генерация случайных победителей
-    const participants = Array.from({ length: participantCount }, (_, i) => i + 1); // Массив от 1 до количества участников
-    const winners = [];
+        // Генерация случайных победителей
+        const participants = Array.from({ length: participantCount }, (_, i) => i + 1);
+        const winners = [];
 
-    while (winners.length < winnerCount) {
-        const randomIndex = Math.floor(Math.random() * participants.length);
-        winners.push(participants.splice(randomIndex, 1)[0]); // Удаляем выбранного участника из списка
-    }
+        while (winners.length < winnerCount) {
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            winners.push(participants.splice(randomIndex, 1)[0]);
+        }
 
-    // Отображение результата
-    const resultContainer = document.getElementById('randomizer-result');
-    resultContainer.innerHTML = `<p><strong>Победители:</strong> ${winners.join(', ')}</p>`;
-    resultContainer.classList.remove('hidden'); // Показать контейнер с результатом
+        // Отображение результатов
+        const resultContainer = $('#randomizer-result');
+        resultContainer.html(`<p><strong>Победители:</strong> ${winners.join(', ')}</p>`);
+        resultContainer.removeClass('hidden');
+    });
+
+    // Сброс формы и скрытие результатов при закрытии модального окна
+    $(document).on('closing', '.remodal', function () {
+        $('#randomizer-participant-count').val('');
+        $('#randomizer-winner-count').val('');
+        $('#randomizer-result').addClass('hidden'); // Скрыть результат
+    });
 });
 
-// Сброс формы и скрытие контейнера при закрытии модального окна
-$(document).on('closing', '.remodal', function (e) {
-    document.getElementById('randomizer-participant-count').value = '';
-    document.getElementById('randomizer-winner-count').value = '';
-    document.getElementById('randomizer-result').classList.add('hidden'); // Скрыть результат
-});
-    </script>
+</script>

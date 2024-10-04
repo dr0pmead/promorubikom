@@ -12,6 +12,17 @@ function handle_ticket_registration() {
         $gender = sanitize_text_field($_POST['gender']);
         $promoaction = sanitize_text_field($_POST['promoaction']); // ID акции
 
+        if (isset($_POST['form_time']) && is_form_submitted_too_fast(intval($_POST['form_time']))) {
+            wp_send_json_error(array('message' => 'Форма отправлена слишком быстро. Попробуйте снова.'));
+            return;
+        }
+        
+        // Проверка частоты запросов по номеру телефона
+        if (is_rate_limited($phone)) {
+            wp_send_json_error(array('message' => 'Слишком много запросов. Попробуйте позже.'));
+            return;
+        }
+
         // Проверяем, что указано либо фото, либо текст
         if (isset($_FILES['receipt_image']) && !empty($_FILES['receipt_image']['name'])) {
             // Обработка загрузки фото

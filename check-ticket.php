@@ -842,7 +842,7 @@ jQuery(document).ready(function($) {
                                         <div class="ticket-item bg-[#222222] border-[1px] border-white/10 rounded-lg p-4 mb-4 flex justify-between items-center">
                                             <div class="flex flex-col gap-2 justify-start">
                                                 <div class="flex gap-2 items-center sm:flex-row flex flex-col sm:gap-2 gap-1">
-                                                    <span class="font-bold text-lg text-white"> ${ticket.owner.name}  ${ticket.owner.firstname}</span>
+                                                    <span class="font-bold text-lg text-white"> ${ticket.owner.name}  ${ticket.owner.firstname} </span>
                                                     <span class="text-sm text-white font-regular w-full justify-start flex items-center sm:w-[35%] text-nowrap">${ticket.owner.region} </span>
                                                 </div>
                                                 <span class="text-md text-white"> ${ticket.owner.phone} </span>
@@ -910,6 +910,44 @@ jQuery(document).ready(function($) {
         window.deletedAllTickets = deletedAllTickets;
 
         });
+
+    </script>
+
+    <script>
+jQuery(document).ready(function ($) {
+    // Обработчик для кнопки "Разыграть"
+    $('#start-randomizer').on('click', function () {
+        const participantCount = parseInt($('#randomizer-participant-count').val());
+        const winnerCount = parseInt($('#randomizer-winner-count').val());
+
+        // Проверка корректных значений
+        if (isNaN(participantCount) || isNaN(winnerCount) || participantCount < 1 || winnerCount < 1 || winnerCount > participantCount) {
+            alert('Введите корректные значения для участников и победителей.');
+            return;
+        }
+
+        // Генерация случайных победителей
+        const participants = Array.from({ length: participantCount }, (_, i) => i + 1);
+        const winners = [];
+
+        while (winners.length < winnerCount) {
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            winners.push(participants.splice(randomIndex, 1)[0]);
+        }
+
+        // Отображение результатов
+        const resultContainer = $('#randomizer-result');
+        resultContainer.html(`<p><strong>Победители:</strong> ${winners.join(', ')}</p>`);
+        resultContainer.removeClass('hidden');
+    });
+
+    // Сброс формы и скрытие результатов при закрытии модального окна
+    $(document).on('closing', '.remodal', function () {
+        $('#randomizer-participant-count').val('');
+        $('#randomizer-winner-count').val('');
+        $('#randomizer-result').addClass('hidden'); // Скрыть результат
+    });
+});
 
     </script>
 

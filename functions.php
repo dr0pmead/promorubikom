@@ -26,6 +26,7 @@ function mytheme_enqueue_styles() {
     wp_enqueue_style('checkbox-style', get_template_directory_uri() . '/assets/css/checkbox.css');
     wp_enqueue_style('tailwind-style', get_template_directory_uri() . '/assets/css/style.css');
     wp_enqueue_script('login-handler', get_template_directory_uri() . '/assets/js/login.js', ['jquery'], null, true);
+    wp_enqueue_script('randomizer-js', get_template_directory_uri() . '/assets/js/randomizer.js', ['jquery'], null, true);
     wp_localize_script('login-handler', 'ajax_object', array(
         'ajax_url' => admin_url('admin-ajax.php')
     ));

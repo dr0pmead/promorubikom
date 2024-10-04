@@ -148,6 +148,25 @@
             </form>
     </div>
 
+    <!-- Модальное окно для рандомайзера -->
+    <div class="remodal bg-[#131313] border-[1px] border-[#fff]/10 p-8 rounded-lg text-center max-w-md mx-auto" data-remodal-id="modal-randomizer" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDesc" data-remodal-options="hashTracking: false, closeOnOutsideClick: false">
+        <h1 id="modalTitle" class="text-2xl font-bold text-white mb-6">Рандомайзер</h1>
+
+        <!-- Поле для ввода количества участников -->
+        <input type="number" id="randomizer-participant-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Количество участников" min="1">
+
+        <!-- Поле для ввода количества победителей -->
+        <input type="number" id="randomizer-winner-count" class="w-full px-4 py-3 font-bold border-[1px] border-[#fff]/10 bg-[#131313] text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 mb-6" placeholder="Количество победителей" min="1">
+
+        <!-- Кнопка "Разыграть" -->
+        <button id="start-randomizer" class="bg-[#E53F0B] hover:bg-[#F35726] text-white px-6 py-3 rounded-md w-full transition-colors font-bold">
+            Разыграть
+        </button>
+
+        <!-- Контейнер для отображения победителей, скрыт по умолчанию -->
+        <div id="randomizer-result" class="text-white mt-6 hidden"></div>
+    </div>
+
 
 
 <?php wp_footer(); ?>
@@ -484,5 +503,6 @@ document.addEventListener('click', function (event) {
 
 
 </script>
+
 </body>
 </html>
